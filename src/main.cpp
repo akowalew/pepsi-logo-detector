@@ -12,10 +12,10 @@ int main(int /*argc*/, char** /*argv*/)
     // Write text on the matrix:
     cv::putText(output,
                 "Hello World :)",
-                cvPoint(15, 70),
+                cv::Point(15, 70),
                 cv::FONT_HERSHEY_PLAIN,
                 3,
-                cvScalar(0, 255, 0),
+                cv::Scalar(0, 255, 0),
                 4);
 
     // Display the image
