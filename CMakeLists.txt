@@ -4,6 +4,7 @@ project(pepsi-logo-detector VERSION 0.1.0 LANGUAGES CXX)
 # Project options
 option(DETECTOR_TESTS "Enable unit tests for detector" ON)
 
+# Conan setup
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
@@ -42,6 +43,13 @@ if(MSVC)
     		/W4
     )
 endif()
+
+# Copy assets to build dir
+message(STATUS "Copying assets to build dir")
+execute_process(COMMAND
+	${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/assets
+                                       ${CMAKE_BINARY_DIR}/assets
+)
 
 # Unit tests
 if(DETECTOR_TESTS)
