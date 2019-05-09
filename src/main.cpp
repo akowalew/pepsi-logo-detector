@@ -11,13 +11,9 @@
 
 int main(int /*argc*/, char** argv)
 {
-    // Read image and show it
-    auto img_color_orig = cv::imread(argv[1], cv::IMREAD_COLOR);
-    const auto size = img_color_orig.size();
-
-    // Resize image to lower resolution
-    auto img_color = cv::Mat{};
-    cv::resize(img_color_orig, img_color, size);
+    // Read image
+    auto img_color = cv::imread(argv[1], cv::IMREAD_COLOR);
+    const auto size = img_color.size();
     // cv::imshow("Color image", img_color);
 
     // Convert image to HSV
