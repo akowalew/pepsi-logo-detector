@@ -21,13 +21,6 @@ int main(int /*argc*/, char** argv)
     const auto code = cv::COLOR_BGR2HSV;
     cv::cvtColor(img_color, img_hsv, code);
 
-    // Split HSV image into separate components
-    std::array<cv::Mat, 3> hsv_comps;
-    cv::split(img_hsv, hsv_comps.begin());
-    // cv::imshow("Hue", hsv_comps[0]);
-    // cv::imshow("Saturation", hsv_comps[1]);
-    // cv::imshow("Value", hsv_comps[2]);
-
     // NOTE: OpenCV denotes Hue value in range 0..180 (which corresponds to 0..360 degrees)
 
     // Set blue part extractor thresholds
