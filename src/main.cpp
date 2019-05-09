@@ -13,9 +13,9 @@ int main(int /*argc*/, char** argv)
 {
     // Read image and show it
     auto img_color_orig = cv::imread(argv[1], cv::IMREAD_COLOR);
+    const auto size = img_color_orig.size();
 
     // Resize image to lower resolution
-    const auto size = cv::Size{1024, 576};
     auto img_color = cv::Mat{};
     cv::resize(img_color_orig, img_color, size);
     // cv::imshow("Color image", img_color);
@@ -32,12 +32,63 @@ int main(int /*argc*/, char** argv)
     // cv::imshow("Saturation", hsv_comps[1]);
     // cv::imshow("Value", hsv_comps[2]);
 
-    // Extract Blue part of logo
-    auto extracted_mask = cv::Mat(size, CV_8UC1);
-    auto lower_bound = std::vector<uchar>{std::stoi(argv[2]), std::stoi(argv[3]), std::stoi(argv[4])};
-    auto upper_bound = std::vector<uchar>{std::stoi(argv[5]), std::stoi(argv[6]), std::stoi(argv[7])};
-    cv::inRange(img_hsv, lower_bound, upper_bound, extracted_mask);
-    cv::imshow("Extracted mask", extracted_mask);
+    // NOTE: OpenCV denotes Hue value in range 0..180 (which corresponds to 0..360 degrees)
+
+    // Set blue part extractor thresholds
+    const uchar blue_low_h = 100;
+    const uchar blue_low_s = 100;
+    const uchar blue_low_v = 20;
+    const auto blue_lower_bound = std::vector<uchar>{blue_low_h, blue_low_s, blue_low_v};
+
+    const uchar blue_high_h = 132;
+    const uchar blue_high_s = 255;
+    const uchar blue_high_v = 255;
+    const auto blue_upper_bound = std::vector<uchar>{blue_high_h, blue_high_s, blue_high_v};
+
+    // Extract blue part of logo
+    auto blue_mask = cv::Mat(size, CV_8UC1);
+    cv::inRange(img_hsv, blue_lower_bound, blue_upper_bound, blue_mask);
+    cv::imshow("Blue mask", blue_mask);
+
+    // Red component is splitted into two parts. Left is in Hue=0..15 and Right is in Hue=165..180,
+    //  so we have to calculate two thresholds and join results
+
+    // Set left red part extractor thresholds
+    const uchar left_red_low_h = 0;
+    const uchar left_red_low_s = 150;
+    const uchar left_red_low_v = 50;
+    const auto left_red_lower_bound = std::vector<uchar>{left_red_low_h, left_red_low_s, left_red_low_v};
+
+    const uchar left_red_high_h = 10;
+    const uchar left_red_high_s = 255;
+    const uchar left_red_high_v = 255;
+    const auto left_red_upper_bound = std::vector<uchar>{left_red_high_h, left_red_high_s, left_red_high_v};
+
+    // Set right red part extractor thresholds
+    const uchar right_red_low_h = 165;
+    const uchar right_red_low_s = 150;
+    const uchar right_red_low_v = 150;
+    const auto right_red_lower_bound = std::vector<uchar>{right_red_low_h, right_red_low_s, right_red_low_v};
+
+    const uchar right_red_high_h = 180;
+    const uchar right_red_high_s = 255;
+    const uchar right_red_high_v = 255;
+    const auto right_red_upper_bound = std::vector<uchar>{right_red_high_h, right_red_high_s, right_red_high_v};
+
+    // Extract left red part of logo
+    auto left_red_mask = cv::Mat(size, CV_8UC1);
+    cv::inRange(img_hsv, left_red_lower_bound, left_red_upper_bound, left_red_mask);
+    // cv::imshow("Left red mask", left_red_mask);
+
+    // Extract right red part of logo
+    auto right_red_mask = cv::Mat(size, CV_8UC1);
+    cv::inRange(img_hsv, right_red_lower_bound, right_red_upper_bound, right_red_mask);
+    // cv::imshow("Right red mask", right_red_mask);
+
+    // Join results of both red masks
+    auto red_mask = cv::Mat(size, CV_8UC1);
+    cv::bitwise_or(left_red_mask, right_red_mask, red_mask);
+    cv::imshow("Red mask", red_mask);
 
     // Wait for the user to press any key
     cv::waitKey(0);
