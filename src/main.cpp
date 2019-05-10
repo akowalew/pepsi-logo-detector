@@ -1,5 +1,7 @@
+#include <cmath>
 #include <cstdio>
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -8,6 +10,21 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+
+void draw_contours_randomly(const std::vector<std::vector<cv::Point>>& contours, cv::Mat& img)
+{
+    for(auto i = 0; i < contours.size(); ++i)
+    {
+        const auto color = cv::Scalar(rand() & 255, rand() & 255, rand() & 255);
+        const auto thickness = 3;
+        drawContours(img, contours, i, color, thickness);
+    }
+}
+
+double calc_malinowska_factor(double perimeter, double area)
+{
+    return perimeter / (2 * std::sqrt(M_PI * area)) - 1;
+}
 
 int main(int /*argc*/, char** argv)
 {
@@ -38,6 +55,66 @@ int main(int /*argc*/, char** argv)
     auto blue_mask = cv::Mat(size, CV_8UC1);
     cv::inRange(img_hsv, blue_lower_bound, blue_upper_bound, blue_mask);
     cv::imshow("Blue mask", blue_mask);
+
+    // // Perform closing on blue mask
+    // const auto kernel_shape = cv::MORPH_RECT;
+    // const auto kernel_size = cv::Size{5, 5};
+    // const auto kernel = cv::getStructuringElement(kernel_shape, kernel_size);
+    // cv::erode(blue_mask, blue_mask, kernel);
+    // cv::dilate(blue_mask, blue_mask, kernel);
+    // cv::imshow("Blue mask (filtered)", blue_mask);
+
+    // Find contours in blue mask
+    std::vector<std::vector<cv::Point>> blue_contours_all;
+    const auto blue_retr_mode = cv::RETR_LIST;
+    const auto blue_approx_method = cv::CHAIN_APPROX_NONE;
+    cv::findContours(blue_mask, blue_contours_all, blue_retr_mode, blue_approx_method);
+
+    // Filter out blue contours with small area
+    auto blue_contours = std::vector<std::vector<cv::Point>>(blue_contours_all.size());
+    const auto is_blue_part = [](const auto& contour) {
+        const auto area = cv::contourArea(contour);
+        return area >= 1500.0 && area <= 5000.0;
+    };
+    const auto last_blue_it = std::copy_if(blue_contours_all.begin(), blue_contours_all.end(),
+                                           blue_contours.begin(), is_blue_part);
+    const auto blue_contours_count = std::distance(blue_contours.begin(), last_blue_it);
+    blue_contours.resize(blue_contours_count);
+
+    // Print blue contours perimeters
+    printf("Blue Contours perimeters:\n");
+    const auto print_contour_perimeter = [](const auto& contour) { printf("%lf\n", cv::arcLength(contour, true)); };
+    std::for_each(blue_contours.begin(), blue_contours.end(), print_contour_perimeter);
+
+    // Print blue contours areas
+    printf("Blue Contours areas:\n");
+    const auto print_contour_area = [](const auto& contour) { printf("%lf\n", cv::contourArea(contour)); };
+    std::for_each(blue_contours.begin(), blue_contours.end(), print_contour_area);
+
+    // Print Malinowska factors
+    printf("Blue Contours Malinowska factors:\n");
+    const auto print_contour_mf = [](const auto& contour) { printf("%lf\n", calc_malinowska_factor(cv::arcLength(contour, true), cv::contourArea(contour))); };
+    std::for_each(blue_contours.begin(), blue_contours.end(), print_contour_mf);
+
+    // Draw blue contours
+    auto blue_contours_img = img_color.clone();
+    draw_contours_randomly(blue_contours, blue_contours_img);
+    cv::imshow("Blue contours", blue_contours_img);
+
+    // Obtain moments of blue parts
+    auto blue_moments = std::vector<cv::Moments>(blue_contours.size());
+    const auto calc_moments = [](const auto& contour) { return cv::moments(contour); };
+    std::transform(blue_contours.begin(), blue_contours.end(), blue_moments.begin(), calc_moments);
+
+    // Print blue parts moments
+    printf("Blue central moments:\n");
+    const auto print_central_moments = [](const auto& m) {
+        printf("%16.3lf %16.3lf %16.3lf %16.3lf %16.3lf %16.3lf %16.3lf\n", m.mu20, m.mu11, m.mu02, m.mu30, m.mu21, m.mu12, m.mu03);
+    };
+    std::for_each(blue_moments.begin(), blue_moments.end(), print_central_moments);
+
+    cv::waitKey(0);
+    return 0;
 
     // Red component is splitted into two parts. Left is in Hue=0..15 and Right is in Hue=165..180,
     //  so we have to calculate two thresholds and join results
@@ -78,6 +155,32 @@ int main(int /*argc*/, char** argv)
     auto red_mask = cv::Mat(size, CV_8UC1);
     cv::bitwise_or(left_red_mask, right_red_mask, red_mask);
     cv::imshow("Red mask", red_mask);
+
+    // Find contours in red mask
+    std::vector<std::vector<cv::Point>> red_contours_all;
+    const auto red_retr_mode = cv::RETR_LIST;
+    const auto red_approx_method = cv::CHAIN_APPROX_NONE;
+    cv::findContours(red_mask, red_contours_all, red_retr_mode, red_approx_method);
+
+    // Filter out red contours with small area
+    auto red_contours = std::vector<std::vector<cv::Point>>(red_contours_all.size());
+    const auto min_red_contour_area = 1000.0;
+    const auto is_red_not_small = [min_red_contour_area](const auto& contour) { return (cv::contourArea(contour) >= min_red_contour_area); };
+    const auto last_red_it = std::copy_if(red_contours_all.begin(), red_contours_all.end(),
+                                           red_contours.begin(), is_red_not_small);
+    const auto red_contours_count = std::distance(red_contours.begin(), last_red_it);
+    red_contours.resize(red_contours_count);
+
+    printf("Red ontours:\n");
+    for(const auto& contour : red_contours)
+    {
+        printf("%lf\n", cv::contourArea(contour));
+    }
+
+    // Draw red contours
+    auto red_contours_img = img_color.clone();
+    draw_contours_randomly(red_contours, red_contours_img);
+    cv::imshow("Red contours", red_contours_img);
 
     // Wait for the user to press any key
     cv::waitKey(0);
