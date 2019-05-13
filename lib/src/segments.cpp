@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include <optional>
 #include <stack>
 
 struct Shift
@@ -21,53 +22,88 @@ static constexpr std::array<Shift, 8> Shifts = {
     Shift{ 1,  -1},
 };
 
+bool is_point_valid(const cv::Mat& img, cv::Point point)
+{
+    return (point.x >= 0
+         && point.y >= 0
+         && point.y < img.rows
+         && point.x < img.cols);
+}
+
+bool is_point_set(const cv::Mat& img, cv::Point point)
+{
+    return (img.at<uchar>(point) != 0);
+}
+
+void clear_point(cv::Mat& img, cv::Point point)
+{
+    img.at<uchar>(point) = 0;
+}
+
+std::optional<cv::Point> find_next_point_from(const cv::Mat& img, cv::Point point)
+{
+    CV_Assert(img.depth() == 1);
+    CV_Assert(img.channels() == 1);
+    CV_Assert(is_point_valid(img, point));
+
+    for(const auto shift : Shifts)
+    {
+        const auto next_point = cv::Point(point.x + shift.sx, point.y + shift.sy);
+        if(is_point_valid(img, next_point) && is_point_set(img, next_point))
+        {
+            return next_point;
+        }
+    }
+
+    return {};
+}
+
+std::optional<cv::Point> find_next_point_in_segment(const cv::Mat& img, const Segment& segment)
+{
+    CV_Assert(img.depth() == 1);
+    CV_Assert(img.channels() == 1);
+
+    for(const auto& point : segment)
+    {
+        const auto next_point = find_next_point_from(img, point);
+        if(next_point)
+        {
+            return next_point;
+        }
+    }
+
+    return {};
+}
+
 Segment find_segment(cv::Mat& img, cv::Point first)
 {
     CV_Assert(img.depth() == 1);
     CV_Assert(img.channels() == 1);
-    CV_Assert(img.isContinuous());
+    CV_Assert(is_point_valid(img, first));
+    CV_Assert(is_point_set(img, first));
 
-    auto x = first.x;
-    auto y = first.y;
-    auto ptr = reinterpret_cast<uchar*>(img.data) + (y * img.cols) + x;
-
+    auto point = first;
     auto segment = Segment();
     segment.reserve(1024);
 
-    while(true)
+    do
     {
-        assert(x < img.rows && x >= 0);
-        assert(y < img.cols && y >= 0);
-        assert(ptr < img.dataend && ptr >= img.data);
+        clear_point(img, point);
+        segment.emplace_back(point);
 
-        assert(*ptr); // This pixel should be set
-        segment.emplace_back(x, y);
-        *ptr = 0; // Turn off that pixel
-
-        bool next_found = false;
-
-        // TODO: Maybe store the pointer instead of points?
-
-        for(auto it = segment.rbegin(); it != segment.rend(); ++it)
+        if(const auto next_point = find_next_point_from(img, point); next_point)
         {
-
+            point = *next_point;
+            continue;
         }
 
-        // TODO: stack unwind
-        for(const auto shift : Shifts)
+        if(const auto next_point = find_next_point_in_segment(img, segment); next_point)
         {
-            const auto next_ptr = ptr + (shift.sy * img.cols) + shift.sx;
-            if(*next_ptr)
-            {
-                next_found = true;
-                ptr = next_ptr;
-                // TODO: border case
-                x += shift.sx;
-                y += shift.sy;
-                break;
-            }
+            point = *next_point;
+            continue;
         }
     }
+    while(false);
 
     segment.shrink_to_fit();
     return segment;
@@ -83,13 +119,14 @@ Segments find_segments(cv::Mat& img)
     segments.reserve(1024); // Typically it should be less than this value
 
     auto ptr = reinterpret_cast<uchar*>(img.data);
-    for(auto y = 0; y < img.rows; ++y)
+    auto point = cv::Point();
+    for(point.y = 0; point.y < img.rows; ++point.y)
     {
-        for(auto x = 0; x < img.rows; ++x)
+        for(point.x = 0; point.x < img.cols; ++point.x)
         {
             if(*ptr)
             {
-                segments.push_back(find_segment(img, cv::Point{x, y}));
+                segments.push_back(find_segment(img, point));
             }
 
             ptr++;
