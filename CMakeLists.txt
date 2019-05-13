@@ -12,44 +12,6 @@ conan_basic_setup()
 # Other libraries
 find_package(OpenCV REQUIRED)
 
-# Main executable
-add_executable(detector
-	src/main.cpp
-)
-
-target_link_libraries(detector
-	PRIVATE
-		${CONAN_LIBS}
-		${OpenCV_LIBRARIES}
-)
-
-target_include_directories(detector
-	PUBLIC
-		include/
-	PRIVATE
-		src/
-		${OpenCV_INCLUDE_DIRS}
-)
-
-set_target_properties(detector
-	PROPERTIES
-		CXX_STANDARD 17
-		CXX_EXTENSIONS OFF
-)
-
-if(CMAKE_COMPILER_IS_GNUCC)
-    target_compile_options(detector
-    	PRIVATE
-			-Wall -Wextra -pedantic
-    )
-endif()
-if(MSVC)
-    target_compile_options(detector
-    	PRIVATE
-    		/W4
-    )
-endif()
-
 # Copy assets to build dir
 message(STATUS "Copying assets to build dir")
 execute_process(COMMAND
@@ -57,7 +19,6 @@ execute_process(COMMAND
                                        ${CMAKE_BINARY_DIR}/assets
 )
 
-# Unit tests
-if(DETECTOR_TESTS)
-	add_subdirectory(test)
-endif()
+# Add targets
+add_subdirectory(lib)
+add_subdirectory(app)
