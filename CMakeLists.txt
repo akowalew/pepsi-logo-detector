@@ -5,8 +5,12 @@ project(pepsi-logo-detector VERSION 0.1.0 LANGUAGES CXX)
 option(DETECTOR_TESTS "Enable unit tests for detector" ON)
 
 # Conan setup
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+find_file(CONANBUILDINFO_FILE conanbuildinfo.cmake HINTS ${CMAKE_BINARY_DIR})
+include(${CONANBUILDINFO_FILE})
 conan_basic_setup()
+
+# Other libraries
+find_package(OpenCV REQUIRED)
 
 # Main executable
 add_executable(detector
@@ -16,6 +20,7 @@ add_executable(detector
 target_link_libraries(detector
 	PRIVATE
 		${CONAN_LIBS}
+		${OpenCV_LIBRARIES}
 )
 
 target_include_directories(detector
@@ -23,6 +28,7 @@ target_include_directories(detector
 		include/
 	PRIVATE
 		src/
+		${OpenCV_INCLUDE_DIRS}
 )
 
 set_target_properties(detector
