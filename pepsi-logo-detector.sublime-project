@@ -2,7 +2,7 @@
 	"folders":
 	[
 		{
-			"path": "../"
+			"path": "."
 		}
 	],
 	"build_systems":
@@ -60,7 +60,7 @@
 		"ecc_flags_sources": [
 			{
 				"file": "CMakeLists.txt",
-	    	  	"prefix_paths": [ "${project_path}" ]
+	    	  	"prefix_paths": [ "${project_path}/build" ]
 			}
 		]
 	}

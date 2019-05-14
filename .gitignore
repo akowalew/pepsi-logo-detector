@@ -33,3 +33,6 @@
 
 # Build directories
 build/
+
+# Sublime-Text workspace files
+*.sublime-workspace
