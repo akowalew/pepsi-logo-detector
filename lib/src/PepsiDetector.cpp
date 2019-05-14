@@ -2,6 +2,7 @@
 
 #include "core.hpp"
 #include "format.hpp"
+#include "segments.hpp"
 
 template<typename T, std::size_t N>
 cv::_InputArray adapt_array(const std::array<T, N>& array)
@@ -41,12 +42,17 @@ Logos PepsiDetector::find_logos(const cv::Mat& src)
 	auto hsv = cv::Mat{src.size(), CV_8UC3};
 	bgr2hsv(src, hsv);
 
-	// Threshold by colors
+	// Match blue part
 	auto blue_mask = cv::Mat{hsv.size(), CV_8UC1};
 	double_threshold(hsv, blue_mask,
 					 adapt_array(_config.blue_hsv_min),
 					 adapt_array(_config.blue_hsv_max));
 
+	// Find blue segments
+	auto blue_segments = find_segments(blue_mask);
+
+
+	// Match red part
 	auto left_red_mask = cv::Mat{hsv.size(), CV_8UC1};
 	double_threshold(hsv, left_red_mask,
 					 adapt_array(_config.left_red_hsv_min),
