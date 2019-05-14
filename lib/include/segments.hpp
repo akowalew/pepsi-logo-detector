@@ -4,8 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 
-using Segment = std::vector<cv::Point>;
+using SegmentsAnchors = std::vector<cv::Point>;
+using SegmentsMats = std::vector<cv::Mat>;
 
-using Segments = std::vector<Segment>;
+using Segments = std::pair<SegmentsAnchors, SegmentsMats>;
 
 Segments find_segments(cv::Mat& image);
