@@ -18,7 +18,7 @@ auto count_logos(std::string_view image_file)
 	return find_logos(image_file).size();
 }
 
-TEST_CASE("Correct number of logos should be returned", "[find_logos]")
+TEST_CASE("Correct number of logos should be returned", "[PepsiDetector::find_logos]")
 {
     REQUIRE(count_logos("assets/pepsi1.jpg") == 3);
     REQUIRE(count_logos("assets/pepsi4.jpg") == 1);
