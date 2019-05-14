@@ -1,11 +1,12 @@
 # Main library
 add_library(detector
+	src/blobs.cpp include/blobs.hpp
 	src/core.cpp include/core.hpp
 	src/features.cpp include/features.hpp
 	src/format.cpp include/format.hpp
 	src/morpho.cpp include/morpho.hpp
 	src/PepsiDetector.cpp include/PepsiDetector.hpp
-	src/segments.cpp include/segments.hpp
+	src/points.cpp include/points.hpp
 )
 
 target_link_libraries(detector
