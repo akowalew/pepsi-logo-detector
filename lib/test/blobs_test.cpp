@@ -13,7 +13,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 	{
 		const auto type = CV_8UC1;
 		const auto size = cv::Size{8, 8};
-		cv::Mat img = cv::Mat::zeros(size, type);
+		cv::Mat_<uchar> img = cv::Mat_<uchar>::zeros(size);
 
 		WHEN("Finding blobs")
 		{
@@ -28,7 +28,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 			{
 				REQUIRE(img.depth() == type);
 				REQUIRE(img.size() == size);
-				REQUIRE(std::all_of(img.begin<uchar>(), img.end<uchar>(),
+				REQUIRE(std::all_of(img.begin(), img.end(),
 									[](const auto& value) { return (value == 0); }));
 			}
 		}
@@ -38,7 +38,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 	{
 		const auto type = CV_8UC1;
 		const auto size = cv::Size{8, 8};
-		cv::Mat img = cv::Mat::ones(size, type);
+		cv::Mat_<uchar> img = cv::Mat_<uchar>::ones(size);
 
 		WHEN("Finding blobs")
 		{
@@ -70,7 +70,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 	{
 		const auto type = CV_8UC1;
 		const auto size = cv::Size{8, 8};
-		cv::Mat img = cv::Mat::zeros(size, type);
+		cv::Mat_<uchar> img = cv::Mat_<uchar>::zeros(size);
 
 		cv::line(img, cv::Point{0, 0}, cv::Point(img.cols-1, 0), 255, 1);
 		cv::line(img, cv::Point{img.cols-1, 0}, cv::Point(img.cols-1, img.rows-1), 255, 1);
@@ -119,7 +119,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 	{
 		const auto type = CV_8UC1;
 		const auto size = cv::Size{8, 8};
-		cv::Mat img = cv::Mat::zeros(size, type);
+		cv::Mat_<uchar> img = cv::Mat_<uchar>::zeros(size);
 
 		for(auto y = 0; y < img.rows; ++y)
 		{
@@ -163,7 +163,7 @@ SCENARIO("Blobs can be extracted from the binary image", "[find_blobs]")
 	{
 		const auto type = CV_8UC1;
 		const auto size = cv::Size{8, 8};
-		cv::Mat img = cv::Mat::zeros(size, type);
+		cv::Mat_<uchar> img = cv::Mat_<uchar>::zeros(size);
 
 		img.at<uchar>(cv::Point{0, 0}) = 255;
 		img.at<uchar>(cv::Point{img.cols-1, 0}) = 255;

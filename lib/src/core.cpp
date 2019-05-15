@@ -13,7 +13,7 @@ void threshold(const cv::Mat& src, cv::Mat& dst,
 	cv::threshold(src, dst, thresh, max_value, method);
 }
 
-void double_threshold(const cv::Mat& src, cv::Mat& dst,
+void double_threshold(const cv::Mat& src, cv::Mat_<uchar>& dst,
 					  cv::InputArray lower_bound, cv::InputArray upper_bound)
 {
 	CV_Assert(src.size() == dst.size());

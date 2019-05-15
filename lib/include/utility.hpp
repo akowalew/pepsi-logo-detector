@@ -11,12 +11,12 @@
  *
  * @return
  */
-inline bool is_point_valid(const cv::Mat& img, cv::Point point)
+inline bool is_point_valid(const cv::Mat& img, cv::Point point) noexcept
 {
     return (point.x >= 0
-         && point.y >= 0
-         && point.y < img.rows
-         && point.x < img.cols);
+        && point.y >= 0
+        && point.y < img.rows
+        && point.x < img.cols);
 }
 
 /**
@@ -27,9 +27,9 @@ inline bool is_point_valid(const cv::Mat& img, cv::Point point)
  *
  * @return
  */
-inline bool is_point_set(const cv::Mat& img, cv::Point point)
+inline bool is_point_set(const cv::Mat_<uchar>& img, cv::Point point) noexcept
 {
-    return (img.at<uchar>(point) != 0);
+    return (img(point) != 0);
 }
 
 /**
@@ -38,9 +38,9 @@ inline bool is_point_set(const cv::Mat& img, cv::Point point)
  * @param img
  * @param point
  */
-inline void clear_point(cv::Mat& img, cv::Point point)
+inline void clear_point(cv::Mat_<uchar>& img, cv::Point point)
 {
-    img.at<uchar>(point) = 0;
+    img(point) = 0;
 }
 
 /**
@@ -49,7 +49,7 @@ inline void clear_point(cv::Mat& img, cv::Point point)
  * @param img
  * @param point
  */
-inline void set_point(cv::Mat& img, cv::Point point)
+inline void set_point(cv::Mat_<uchar>& img, cv::Point point)
 {
-    img.at<uchar>(point) = 255;
+    img(point) = 255;
 }
