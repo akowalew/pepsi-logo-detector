@@ -5,6 +5,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "blobs.hpp"
+
 using LogoDescription = cv::Rect;
 
 using Logos = std::vector<LogoDescription>;
@@ -22,18 +24,22 @@ public:
 		std::array<uchar, 3> left_red_hsv_max;
 		std::array<uchar, 3> right_red_hsv_min;
 		std::array<uchar, 3> right_red_hsv_max;
-		double area_min;
-		double area_max;
-		double malinowska_min;
-		double malinowska_max;
+		int min_area;
+		int max_area;
+		double min_malinowska;
+		double max_malinowska;
 	};
 
 	explicit PepsiDetector(const Config& config = Config());
 
-	Logos find_logos(const cv::Mat& image);
+	Logos find_logos(const cv::Mat& img);
 
 	const Config& config() const noexcept;
 
 private:
+	Blobs match_blue_parts(const cv::Mat& img);
+
+	Blobs match_red_parts(const cv::Mat& img);
+
 	Config _config;
 };

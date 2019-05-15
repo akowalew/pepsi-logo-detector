@@ -22,41 +22,27 @@ int main(int argc, char** argv)
     app.add_option("-o,--ofile,ofile", ofile,
                    "Path for output file. If not specified, prints to stdout");
 
-    std::vector<std::uint8_t> blue_min_hsv{107, 100, 20};
-    app.add_option("--blue-min-hsv", blue_min_hsv,
-                   "Minimum HSV value for blue part of logo")
-        ->expected(3)
-        ->check(CLI::Range(0, 255));
-
-    std::vector<std::uint8_t> blue_max_hsv{130, 255, 255};
-    app.add_option("--blue-max-hsv", blue_max_hsv,
-                   "Maximum HSV value for blue part of logo")
-        ->expected(3)
-        ->check(CLI::Range(0, 255));
-
-    bool filter{false};
-    app.add_flag("--filter", filter,
-                 "Enable additional filtering after color thresholding step");
-
-    double min_area{1000.0};
-    app.add_option("--min-area", min_area,
-                   "Minimum area of logo components");
-
-    double max_area{3000.0};
-    app.add_option("--max-area", max_area,
-                   "Maximum area of logo components");
-
-    double min_malinowska{0.6};
-    app.add_option("--min-malinowska", min_malinowska,
-                   "Minimum value of Malinowska factor");
-
-    double max_malinowska{0.9};
-    app.add_option("--max-malinowska", max_malinowska,
-                   "Maximum value of Malinowska factor");
+    PepsiDetector::Config config;
+    // app.add_option("--blue-hsv-min", config.blue_hsv_min,
+    //                "Minimum HSV value for blue part of logo")
+    //     ->expected(3)
+    //     ->check(CLI::Range(0, 255));
+    // app.add_option("--blue-hsv-max", config.blue_hsv_max,
+    //                "Maximum HSV value for blue part of logo")
+    //     ->expected(3)
+    //     ->check(CLI::Range(0, 255));
+    app.add_option("--min-area", config.min_area,
+                   "Minimum area of logo components (=1000)");
+    app.add_option("--max-area", config.max_area,
+                   "Maximum area of logo components (=3000)");
+    app.add_option("--min-malinowska", config.min_malinowska,
+                   "Minimum value of Malinowska factor (=0.6)");
+    app.add_option("--max-malinowska", config.max_malinowska,
+                   "Maximum value of Malinowska factor (=0.9)");
 
     CLI11_PARSE(app, argc, argv);
 
-    auto detector = PepsiDetector{};
+    auto detector = PepsiDetector{config};
     const auto image = cv::imread(ifile, cv::IMREAD_COLOR);
     const auto logos = detector.find_logos(image);
 
