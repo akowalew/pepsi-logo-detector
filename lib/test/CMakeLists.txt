@@ -1,6 +1,7 @@
 add_executable(detector_test
-	tests_main.cpp
 	blobs_test.cpp
+	tests_main.cpp
+	moments_test.cpp
 )
 
 target_link_libraries(detector_test
