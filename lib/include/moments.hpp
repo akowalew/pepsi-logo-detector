@@ -36,12 +36,24 @@ constexpr static auto HuMomentsMax = 7;
 
 using HuMoments = std::array<HuMoment, HuMomentsMax>;
 
+struct Moments
+{
+	SpatialMoments spatial;
+	CentralMoments central;
+	NormalizedMoments normalized;
+	HuMoments hu;
+	Centroid centroid;
+};
+
 SpatialMoments calc_spatial_moments(const Blob& blob) noexcept;
 
-Centroid calc_centroid(const SpatialMoments& spatial) noexcept;
+Centroid calc_centroid(const SpatialMoments& spatial_moments) noexcept;
 
 CentralMoments calc_central_moments(const Blob& blob, Centroid centroid) noexcept;
 
-NormalizedMoments calc_normalized_moments(const CentralMoments& central, SpatialMoment m00) noexcept;
+NormalizedMoments calc_normalized_moments(const CentralMoments& central_moments,
+										  SpatialMoment m00) noexcept;
 
-HuMoments calc_hu_moments(const NormalizedMoments& normalized) noexcept;
+HuMoments calc_hu_moments(const NormalizedMoments& normalized_moments) noexcept;
+
+HuMoments calc_hu_moments(const Blob& blob) noexcept;

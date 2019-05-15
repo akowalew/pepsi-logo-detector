@@ -109,3 +109,13 @@ HuMoments calc_hu_moments(const NormalizedMoments& normalized_moments) noexcept
 			- (nu30 - 3*nu12)*(nu21 + nu03)*(3*sqr(nu30 + nu12) - sqr(nu21 + nu03))
 	};
 }
+
+HuMoments calc_hu_moments(const Blob& blob) noexcept
+{
+	const auto spatial_moments = calc_spatial_moments(blob);
+	const auto centroid = calc_centroid(spatial_moments);
+	const auto central_moments = calc_central_moments(blob, centroid);
+	const auto normalized_moments = calc_normalized_moments(central_moments, spatial_moments.m00);
+
+	return calc_hu_moments(normalized_moments);
+}
