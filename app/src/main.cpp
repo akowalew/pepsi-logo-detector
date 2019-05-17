@@ -2,9 +2,21 @@
 
 #include <vector>
 
-#include "CLI/CLI.hpp"
-
 #include "PepsiDetector.hpp"
+
+namespace CLI
+{
+    std::istringstream &operator>>(std::istringstream &in, std::array<uchar, 3> &val)
+    {
+        int h,s,v;
+        char c;
+        in >> h >> c >> s >> c >> v;
+        val[0] = h; val[1] = s; val[2] = v;
+        return in;
+    }
+}
+
+#include "CLI/CLI.hpp"
 
 int main(int argc, char** argv)
 {
@@ -23,34 +35,40 @@ int main(int argc, char** argv)
                    "Path for output file. If not specified, prints to stdout");
 
     PepsiDetector::Config config;
-    // app.add_option("--blue-hsv-min", config.blue_hsv_min,
-    //                "Minimum HSV value for blue part of logo")
-    //     ->expected(3)
-    //     ->check(CLI::Range(0, 255));
-    // app.add_option("--blue-hsv-max", config.blue_hsv_max,
-    //                "Maximum HSV value for blue part of logo")
-    //     ->expected(3)
-    //     ->check(CLI::Range(0, 255));
+    app.add_option("--min-left-red-hsv", config.min_left_red_hsv,
+                   "Minimum HSV value for red part of logo")
+        // ->expected(3)
+        ->check(CLI::Range(0, 255));
+    app.add_option("--max-left-red-hsv", config.max_left_red_hsv,
+                   "Maximum HSV value for red part of logo")
+        // ->expected(3)
+        ->check(CLI::Range(0, 255));
     app.add_option("--min-area", config.min_area,
-                   "Minimum area of logo components (=1000)");
+                   "Minimum area of logo components");
     app.add_option("--max-area", config.max_area,
-                   "Maximum area of logo components (=3000)");
+                   "Maximum area of logo components");
     app.add_option("--min-malinowska", config.min_malinowska,
-                   "Minimum value of Malinowska factor (=0.6)");
+                   "Minimum value of Malinowska factor");
     app.add_option("--max-malinowska", config.max_malinowska,
-                   "Maximum value of Malinowska factor (=0.9)");
+                   "Maximum value of Malinowska factor");
+    app.add_option("--min-hu0", config.min_hu0,
+                   "Minimum value of Hu[0] factor");
+    app.add_option("--max-hu0", config.min_hu0,
+                   "Maximum value of Hu[0] factor");
+    app.add_option("--min-hu1", config.min_hu1,
+                   "Minimum value of Hu[0] factor");
+    app.add_option("--max-hu1", config.min_hu1,
+                   "Maximum value of Hu[0] factor");
+    // app.add_option("--min-hu5", config.min_hu5,
+    //                "Minimum value of Hu[0] factor");
+    // app.add_option("--max-hu5", config.min_hu5,
+    //                "Maximum value of Hu[0] factor");
 
     CLI11_PARSE(app, argc, argv);
 
     auto detector = PepsiDetector{config};
     const auto image = cv::imread(ifile, cv::IMREAD_COLOR);
     const auto logos = detector.find_logos(image);
-
-    printf("Found %lu logos\n", logos.size());
-    for(const auto& logo : logos)
-    {
-        printf("%d %d %d %d\n", logo.x, logo.y, logo.width, logo.height);
-    }
 
     cv::waitKey(0);
 
@@ -173,7 +191,7 @@ int main(int argc, char** argv)
 
 //     // NOTE: OpenCV denotes Hue value in range 0..180 (which corresponds to 0..360 degrees)
 
-//     // Set blue part extractor thresholds
+//     // Set red part extractor thresholds
 //     const uchar blue_low_h = 100;
 //     const uchar blue_low_s = 100;
 //     const uchar blue_low_v = 20;
