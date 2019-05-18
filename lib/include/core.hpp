@@ -2,8 +2,11 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "utility.hpp"
+
 void threshold(const cv::Mat& src, cv::Mat& dst,
 			   double thresh);
+
 void double_threshold(const cv::Mat& src, cv::Mat_<uchar>& dst,
 					  cv::InputArray lower_bound, cv::InputArray upper_bound);
 

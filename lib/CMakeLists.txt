@@ -6,7 +6,7 @@ add_library(detector
 	src/format.cpp include/format.hpp
 	src/moments.cpp include/moments.hpp
 	src/morpho.cpp include/morpho.hpp
-	src/PepsiDetector.cpp include/PepsiDetector.hpp
+	src/PepsiDetector.cpp include/PepsiDetector.hpp src/PepsiDetectorImpl.hpp
 	src/points.cpp include/points.hpp
 )
 

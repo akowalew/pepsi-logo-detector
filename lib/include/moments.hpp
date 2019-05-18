@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "blobs.hpp"
+#include "types.hpp"
 
 using SpatialMoment = long long;
 
@@ -36,6 +37,10 @@ constexpr static auto HuMomentsMax = 7;
 
 using HuMoments = std::array<HuMoment, HuMomentsMax>;
 
+using HuMomentsArray = std::vector<HuMoments>;
+
+using HuMomentRange = ValueRange<HuMoment>;
+
 struct Moments
 {
 	SpatialMoments spatial;
@@ -56,4 +61,6 @@ NormalizedMoments calc_normalized_moments(const CentralMoments& central_moments,
 
 HuMoments calc_hu_moments(const NormalizedMoments& normalized_moments) noexcept;
 
-HuMoments calc_hu_moments(const Blob& blob) noexcept;
+HuMoments calc_blob_hu_moments(const Blob& blob) noexcept;
+
+HuMomentsArray calc_blobs_hu_moments(const Blobs& blobs);

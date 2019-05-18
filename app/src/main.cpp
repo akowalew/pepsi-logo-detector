@@ -1,20 +1,6 @@
 #include <cstdio>
 
-#include <vector>
-
 #include "PepsiDetector.hpp"
-
-namespace CLI
-{
-    std::istringstream &operator>>(std::istringstream &in, std::array<uchar, 3> &val)
-    {
-        int h,s,v;
-        char c;
-        in >> h >> c >> s >> c >> v;
-        val[0] = h; val[1] = s; val[2] = v;
-        return in;
-    }
-}
 
 #include "CLI/CLI.hpp"
 
@@ -34,44 +20,13 @@ int main(int argc, char** argv)
     app.add_option("-o,--ofile,ofile", ofile,
                    "Path for output file. If not specified, prints to stdout");
 
-    PepsiDetector::Config config;
-    app.add_option("--min-left-red-hsv", config.min_left_red_hsv,
-                   "Minimum HSV value for red part of logo")
-        // ->expected(3)
-        ->check(CLI::Range(0, 255));
-    app.add_option("--max-left-red-hsv", config.max_left_red_hsv,
-                   "Maximum HSV value for red part of logo")
-        // ->expected(3)
-        ->check(CLI::Range(0, 255));
-    app.add_option("--min-area", config.min_area,
-                   "Minimum area of logo components");
-    app.add_option("--max-area", config.max_area,
-                   "Maximum area of logo components");
-    app.add_option("--min-malinowska", config.min_malinowska,
-                   "Minimum value of Malinowska factor");
-    app.add_option("--max-malinowska", config.max_malinowska,
-                   "Maximum value of Malinowska factor");
-    app.add_option("--min-hu0", config.min_hu0,
-                   "Minimum value of Hu[0] factor");
-    app.add_option("--max-hu0", config.min_hu0,
-                   "Maximum value of Hu[0] factor");
-    app.add_option("--min-hu1", config.min_hu1,
-                   "Minimum value of Hu[0] factor");
-    app.add_option("--max-hu1", config.min_hu1,
-                   "Maximum value of Hu[0] factor");
-    // app.add_option("--min-hu5", config.min_hu5,
-    //                "Minimum value of Hu[0] factor");
-    // app.add_option("--max-hu5", config.min_hu5,
-    //                "Maximum value of Hu[0] factor");
-
     CLI11_PARSE(app, argc, argv);
 
-    auto detector = PepsiDetector{config};
+    auto detector = PepsiDetector{};
     const auto image = cv::imread(ifile, cv::IMREAD_COLOR);
     const auto logos = detector.find_logos(image);
 
     cv::waitKey(0);
-
     return 0;
 }
 

@@ -53,3 +53,9 @@ inline void set_point(cv::Mat_<uchar>& img, cv::Point point)
 {
     img(point) = 255;
 }
+
+template<typename T, std::size_t N>
+cv::_InputArray adapt_array(const std::array<T, N>& array)
+{
+	return cv::_InputArray{array.data(), static_cast<int>(array.size())};
+}

@@ -110,7 +110,7 @@ HuMoments calc_hu_moments(const NormalizedMoments& normalized_moments) noexcept
 	};
 }
 
-HuMoments calc_hu_moments(const Blob& blob) noexcept
+HuMoments calc_blob_hu_moments(const Blob& blob) noexcept
 {
 	const auto spatial_moments = calc_spatial_moments(blob);
 	const auto centroid = calc_centroid(spatial_moments);
@@ -118,4 +118,15 @@ HuMoments calc_hu_moments(const Blob& blob) noexcept
 	const auto normalized_moments = calc_normalized_moments(central_moments, spatial_moments.m00);
 
 	return calc_hu_moments(normalized_moments);
+}
+
+HuMomentsArray calc_blobs_hu_moments(const Blobs& blobs)
+{
+    auto hu_moments_array = HuMomentsArray();
+    hu_moments_array.reserve(blobs.size());
+
+    std::transform(blobs.begin(), blobs.end(),
+    			   std::back_inserter(hu_moments_array),
+                   calc_blob_hu_moments);
+    return hu_moments_array;
 }
