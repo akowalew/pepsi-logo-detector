@@ -58,9 +58,9 @@ PepsiDetector::Config::Config()
             {{{0, 75, 75}}, {{10, 255, 255}}},
             {{{165, 75, 75}}, {{180, 255, 255}}}
         }}
-    ,   red_blob_area_range{200, 10000}
+    ,   red_blob_area_range{1000, 2000}
     ,	red_blob_hu0_range{0.18, 0.20}
-	,	red_blob_hu1_range{0.006, 0.010}
+	,	red_blob_hu1_range{0.006, 0.015}
 {}
 
 // PepsiDetector implementation
