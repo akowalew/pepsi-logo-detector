@@ -16,13 +16,15 @@ public:
     const Config& config() const noexcept;
 
 private:
-	cv::Mat transform_image(const cv::Mat& img) const;
+	cv::Mat convert_image(const cv::Mat& img) const;
+
+	Blobs extract_blue_blobs(const cv::Mat& hsv) const;
 
 	Blobs extract_red_blobs(const cv::Mat& hsv) const;
 
-	Blobs find_red_blobs(const cv::Mat& hsv) const;
-
 	Blobs find_blue_blobs(const cv::Mat& hsv) const;
+
+	Blobs find_red_blobs(const cv::Mat& hsv) const;
 
 	Logos match_blobs(const Blobs& red_blobs, const Blobs& blue_blobs) const;
 
@@ -31,8 +33,6 @@ private:
 	cv::Mat_<uchar> extract_colors(const cv::Mat& hsv, const ColorRanges& ranges) const;
 
 	void filter_color_mask(cv::Mat_<uchar>& mask) const;
-
-	Blobs::iterator filter_blobs(Blobs& blobs) const;
 
 	Blobs::iterator filter_blobs_by_area(Blobs& blobs, BlobAreaRange blob_area_range) const;
 

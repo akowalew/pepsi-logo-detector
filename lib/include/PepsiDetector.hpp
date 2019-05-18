@@ -16,11 +16,14 @@ public:
         Config();
 
 		ColorRange blue_range;
-		ColorRange left_red_range;
-		ColorRange right_red_range;
-		BlobAreaRange blob_area_range;
-		HuMomentRange hu0_range;
-		HuMomentRange hu1_range;
+		BlobAreaRange blue_blob_area_range;
+		HuMomentRange blue_blob_hu0_range;
+		HuMomentRange blue_blob_hu1_range;
+
+		std::array<ColorRange, 2> red_ranges;
+		BlobAreaRange red_blob_area_range;
+		HuMomentRange red_blob_hu0_range;
+		HuMomentRange red_blob_hu1_range;
 	};
 
 	explicit PepsiDetector(const Config& config = Config());
