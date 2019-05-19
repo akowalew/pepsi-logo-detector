@@ -4,9 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 
-using LogoDescription = cv::Rect;
+using Logo = cv::Rect;
 
-using Logos = std::vector<LogoDescription>;
+using Logos = std::vector<Logo>;
 
 class LogoDetector
 {

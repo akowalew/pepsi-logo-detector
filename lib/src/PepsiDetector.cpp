@@ -51,50 +51,6 @@ void display_blobs(cv::Size mat_size, const Blobs& blobs, const char* window_nam
     cv::moveWindow(window_name, 0, 0);
 }
 
-// Point get_blob_center(const Blob& blob)
-// {
-//     Point top_left = blob.front();
-//     Point bottom_right = blob.front();
-//     std::for_each(std::next(blob.begin()), blob.end(),
-//         [&top_left, &bottom_right](const auto& point)
-//         {
-//             if(point.x < top_left.x)
-//             {
-//                 top_left.x = point.x;
-//             }
-
-//             if(point.y < top_left.y)
-//             {
-//                 top_left.y = point.y;
-//             }
-
-//             if(point.x > bottom_right.x)
-//             {
-//                 bottom_right.x = point.x;
-//             }
-
-//             if(point.y > bottom_right.y)
-//             {
-//                 bottom_right.y = point.y;
-//             }
-//         });
-
-//     const auto center_x = ((bottom_right.x + top_left.x) / 2);
-//     const auto center_y = ((bottom_right.y + top_left.y) / 2);
-//     return {center_x, center_y};
-// }
-
-// std::vector<Point> get_blobs_centers(const Blobs& blobs)
-// {
-//     auto centers = Points();
-//     centers.reserve(blobs.size());
-//     std::transform(blobs.begin(), blobs.end(),
-//                    std::back_inserter(centers),
-//                    get_blob_center);
-
-//     return centers;
-// }
-
 BlobAnchors get_blob_anchors(const Blob& blob)
 {
     Point top_left = blob.front();
@@ -178,7 +134,7 @@ PepsiDetector::Config::Config()
             {{{0, 75, 75}}, {{10, 255, 255}}},
             {{{165, 75, 75}}, {{180, 255, 255}}}
         }}
-    ,   red_blob_area_range{1000, 3000}
+    ,   red_blob_area_range{500, 3000}
     ,	red_blob_hu0_range{0.18, 0.20}
 	,	red_blob_hu1_range{0.006, 0.015}
 
