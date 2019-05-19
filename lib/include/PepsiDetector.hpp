@@ -24,6 +24,8 @@ public:
 		BlobAreaRange red_blob_area_range;
 		HuMomentRange red_blob_hu0_range;
 		HuMomentRange red_blob_hu1_range;
+
+		double max_blobs_centers_distance;
 	};
 
 	explicit PepsiDetector(const Config& config = Config());

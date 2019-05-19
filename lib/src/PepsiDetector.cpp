@@ -14,6 +14,14 @@
 
 namespace {
 
+struct BlobAnchors
+{
+    Point top_left;
+    Point bottom_right;
+};
+
+using BlobsAnchors = std::vector<BlobAnchors>;
+
 void print_moments(const HuMomentsArray& hu_moments)
 {
     for(const auto& hu : hu_moments)
@@ -43,6 +51,118 @@ void display_blobs(cv::Size mat_size, const Blobs& blobs, const char* window_nam
     cv::moveWindow(window_name, 0, 0);
 }
 
+// Point get_blob_center(const Blob& blob)
+// {
+//     Point top_left = blob.front();
+//     Point bottom_right = blob.front();
+//     std::for_each(std::next(blob.begin()), blob.end(),
+//         [&top_left, &bottom_right](const auto& point)
+//         {
+//             if(point.x < top_left.x)
+//             {
+//                 top_left.x = point.x;
+//             }
+
+//             if(point.y < top_left.y)
+//             {
+//                 top_left.y = point.y;
+//             }
+
+//             if(point.x > bottom_right.x)
+//             {
+//                 bottom_right.x = point.x;
+//             }
+
+//             if(point.y > bottom_right.y)
+//             {
+//                 bottom_right.y = point.y;
+//             }
+//         });
+
+//     const auto center_x = ((bottom_right.x + top_left.x) / 2);
+//     const auto center_y = ((bottom_right.y + top_left.y) / 2);
+//     return {center_x, center_y};
+// }
+
+// std::vector<Point> get_blobs_centers(const Blobs& blobs)
+// {
+//     auto centers = Points();
+//     centers.reserve(blobs.size());
+//     std::transform(blobs.begin(), blobs.end(),
+//                    std::back_inserter(centers),
+//                    get_blob_center);
+
+//     return centers;
+// }
+
+BlobAnchors get_blob_anchors(const Blob& blob)
+{
+    Point top_left = blob.front();
+    Point bottom_right = blob.front();
+    std::for_each(std::next(blob.begin()), blob.end(),
+        [&top_left, &bottom_right](const auto& point)
+        {
+            if(point.x < top_left.x)
+            {
+                top_left.x = point.x;
+            }
+
+            if(point.y < top_left.y)
+            {
+                top_left.y = point.y;
+            }
+
+            if(point.x > bottom_right.x)
+            {
+                bottom_right.x = point.x;
+            }
+
+            if(point.y > bottom_right.y)
+            {
+                bottom_right.y = point.y;
+            }
+        });
+
+    return {top_left, bottom_right};
+}
+
+BlobsAnchors get_blobs_anchors(const Blobs& blobs)
+{
+    auto blobs_anchors = BlobsAnchors();
+    blobs_anchors.reserve(blobs.size());
+
+    std::transform(blobs.begin(), blobs.end(),
+                   std::back_inserter(blobs_anchors),
+                   get_blob_anchors);
+
+    return blobs_anchors;
+}
+
+Point get_blob_center(const BlobAnchors& blob_anchors)
+{
+    const auto center_x = ((blob_anchors.bottom_right.x + blob_anchors.top_left.x) / 2);
+    const auto center_y = ((blob_anchors.bottom_right.y + blob_anchors.top_left.y) / 2);
+    return {center_x, center_y};
+}
+
+Points get_blobs_centers(const BlobsAnchors& blobs_anchors)
+{
+    auto blobs_centers = Points();
+    blobs_centers.reserve(blobs_anchors.size());
+
+    std::transform(blobs_anchors.begin(), blobs_anchors.end(),
+                   std::back_inserter(blobs_centers),
+                   get_blob_center);
+    return blobs_centers;
+}
+
+double calc_points_distance(Point a, Point b) noexcept
+{
+    const auto dx = (b.x - a.x);
+    const auto dy = (b.y - a.y);
+    return std::sqrt(dx*dx + dy*dy);
+}
+
 } //
 
 /**
@@ -58,9 +178,11 @@ PepsiDetector::Config::Config()
             {{{0, 75, 75}}, {{10, 255, 255}}},
             {{{165, 75, 75}}, {{180, 255, 255}}}
         }}
-    ,   red_blob_area_range{1000, 2000}
+    ,   red_blob_area_range{1000, 3000}
     ,	red_blob_hu0_range{0.18, 0.20}
 	,	red_blob_hu1_range{0.006, 0.015}
+
+    ,   max_blobs_centers_distance{30.0}
 {}
 
 // PepsiDetector implementation
@@ -77,8 +199,7 @@ Logos PepsiDetector::Impl::find_logos(const cv::Mat& img) const
     const auto hsv = convert_image(img);
     const auto blue_blobs = extract_blue_blobs(hsv);
     const auto red_blobs = extract_red_blobs(hsv);
-    // return match_blobs(red_blobs, blue_blobs);
-    return {};
+    return match_blobs(red_blobs, blue_blobs);
 }
 
 void PepsiDetector::Impl::train() {}
@@ -159,9 +280,63 @@ Blobs PepsiDetector::Impl::find_blue_blobs(const cv::Mat& hsv) const
     return blue_blobs;
 }
 
+bool PepsiDetector::Impl::blobs_centers_matching(Point red_center, Point blue_center) const
+{
+    if(red_center.x < blue_center.x
+        && red_center.y < blue_center.y
+        && calc_points_distance(red_center, blue_center) <= m_config.max_blobs_centers_distance)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 Logos PepsiDetector::Impl::match_blobs(const Blobs& red_blobs, const Blobs& blue_blobs) const
 {
-    return {};
+    const auto red_anchors = get_blobs_anchors(red_blobs);
+    const auto red_centers = get_blobs_centers(red_anchors);
+
+    const auto blue_anchors = get_blobs_anchors(blue_blobs);
+    const auto blue_centers = get_blobs_centers(blue_anchors);
+
+    printf("Red centers: ");
+    for(const auto red_center : red_centers)
+    {
+        printf("(%d,%d) ", red_center.x, red_center.y);
+    }
+    printf("\n");
+
+    printf("Blue centers: ");
+    for(const auto blue_center : blue_centers)
+    {
+        printf("(%d,%d) ", blue_center.x, blue_center.y);
+    }
+    printf("\n");
+
+    Logos logos;
+    const auto logos_max = std::min(red_blobs.size(), blue_blobs.size());
+    logos.reserve(logos_max);
+
+    const auto red_blobs_size = red_blobs.size();
+    const auto blue_blobs_size = blue_blobs.size();
+    for(auto red_idx = 0; red_idx < red_blobs_size; ++red_idx)
+    {
+        auto red_center = red_centers[red_idx];
+        for(auto blue_idx = 0; blue_idx < blue_blobs_size; ++blue_idx)
+        {
+            auto blue_center = blue_centers[blue_idx];
+            if(blobs_centers_matching(red_center, blue_center))
+            {
+                const auto top_left = red_anchors[red_idx].top_left;
+                const auto bottom_right = blue_anchors[blue_idx].bottom_right;
+                logos.emplace_back(top_left, bottom_right);
+            }
+        }
+    }
+
+    logos.shrink_to_fit();
+    return logos;
 }
 
 cv::Mat_<uchar> PepsiDetector::Impl::extract_color(const cv::Mat& hsv, const ColorRange& range) const

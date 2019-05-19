@@ -26,6 +26,8 @@ private:
 
 	Blobs find_red_blobs(const cv::Mat& hsv) const;
 
+	bool blobs_centers_matching(Point red_center, Point blue_center) const;
+
 	Logos match_blobs(const Blobs& red_blobs, const Blobs& blue_blobs) const;
 
 	cv::Mat_<uchar> extract_color(const cv::Mat& hsv, const ColorRange& range) const;
