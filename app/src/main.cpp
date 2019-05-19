@@ -4,30 +4,24 @@
 
 #include "CLI/CLI.hpp"
 
+#include "Application.hpp"
+
 int main(int argc, char** argv)
 {
-    CLI::App app{"Detects logo of PEPSI drink in images and marks them"};
+    CLI::App cli{"Detects logo of PEPSI drink in images and marks them"};
 
-    bool verbose{false};
-    app.add_flag("-v,--verbose", verbose,
-        "Prints diagnostic messages");
-
-    std::string ifile;
-    app.add_option("-i,--ifile,ifile", ifile,
+    auto app_options = Application::Options{};
+    cli.add_flag("-v,--verbose", app_options.verbose,
+                 "Prints diagnostic messages");
+    cli.add_option("-i,--ifile,ifile", app_options.ifile,
                    "Path to existing input file. If not specified, reads from stdin");
-
-    std::string ofile;
-    app.add_option("-o,--ofile,ofile", ofile,
+    cli.add_option("-o,--ofile,ofile", app_options.ofile,
                    "Path for output file. If not specified, prints to stdout");
 
-    CLI11_PARSE(app, argc, argv);
+    CLI11_PARSE(cli, argc, argv);
 
-    auto detector = PepsiDetector{};
-    const auto image = cv::imread(ifile, cv::IMREAD_COLOR);
-    const auto logos = detector.find_logos(image);
-
-    cv::waitKey(0);
-    return 0;
+    auto app = Application{app_options};
+    return app.exec();
 }
 
 

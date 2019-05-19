@@ -1,6 +1,7 @@
 # Main executable
 add_executable(find_pepsi
 	src/main.cpp
+	src/Application.cpp src/Application.hpp
 )
 
 target_link_libraries(find_pepsi
