@@ -2,33 +2,52 @@
 
 #include <opencv2/imgproc.hpp>
 
-void threshold(const cv::Mat& src, cv::Mat& dst,
-			   double thresh)
-{
-	CV_Assert(dst.channels() == 1);
-	CV_Assert(src.size() == dst.size());
-
-	const auto max_value = 255;
-	const auto method = cv::THRESH_BINARY;
-	cv::threshold(src, dst, thresh, max_value, method);
-}
-
-void double_threshold(const cv::Mat& src, cv::Mat_<uchar>& dst,
-					  cv::InputArray lower_bound, cv::InputArray upper_bound)
+void threshold(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<uchar>& dst,
+			   cv::Vec3b min, cv::Vec3b max)
 {
 	CV_Assert(src.size() == dst.size());
-	CV_Assert(lower_bound.size() == upper_bound.size());
-	CV_Assert(lower_bound.rows() == 1);
-	CV_Assert(src.channels() == lower_bound.cols());
-	CV_Assert(dst.channels() == 1);
+	CV_Assert(src.isContinuous());
+	CV_Assert(dst.isContinuous());
 
-	cv::inRange(src, lower_bound, upper_bound, dst);
+	auto src_ptr = src.data;
+    const auto src_end = src.dataend;
+    auto dst_ptr = dst.data;
+
+    while(src_ptr != src_end)
+    {
+    	const auto a = *(src_ptr++);
+    	const auto b = *(src_ptr++);
+    	const auto c = *(src_ptr++);
+
+    	if(a >= min[0] && a <= max[0]
+    		&& b >= min[1] && b <= max[1]
+    		&& c >= min[2] && c <= max[2])
+    	{
+    		*(dst_ptr) = 255;
+    	}
+    	else
+    	{
+    		*(dst_ptr) = 0;
+    	}
+
+    	++dst_ptr;
+    }
 }
 
-void bitwise_or(const cv::Mat& src1, const cv::Mat& src2, cv::Mat& dst)
+void bitwise_or(const cv::Mat_<uchar>& src1, const cv::Mat_<uchar>& src2, cv::Mat_<uchar>& dst)
 {
-	CV_Assert((src1.size() == src2.size()) && (src2.size() == dst.size()));
-	CV_Assert((src1.channels() == src2.channels()) && (src2.channels() == dst.channels()));
+	CV_Assert(src1.size() == src2.size());
+    CV_Assert(src2.size() == dst.size());
+    CV_Assert(src1.isContinuous());
+    CV_Assert(src2.isContinuous());
+    CV_Assert(dst.isContinuous());
 
-	cv::bitwise_or(src1, src2, dst);
+    auto src1_ptr = src1.data;
+    auto src2_ptr = src2.data;
+    auto dst_ptr = dst.data;
+    const auto dst_end = dst.dataend;
+    while(dst_ptr != dst_end)
+    {
+        *(dst_ptr++) = (*(src1_ptr++) | *(src2_ptr++));
+    }
 }

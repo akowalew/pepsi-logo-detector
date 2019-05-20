@@ -4,10 +4,7 @@
 
 #include "utility.hpp"
 
-void threshold(const cv::Mat& src, cv::Mat& dst,
-			   double thresh);
+void threshold(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<uchar>& dst,
+		       cv::Vec3b min, cv::Vec3b max);
 
-void double_threshold(const cv::Mat& src, cv::Mat_<uchar>& dst,
-					  cv::InputArray lower_bound, cv::InputArray upper_bound);
-
-void bitwise_or(const cv::Mat& src1, const cv::Mat& src2, cv::Mat& dst);
+void bitwise_or(const cv::Mat_<uchar>& src1, const cv::Mat_<uchar>& src2, cv::Mat_<uchar>& dst);

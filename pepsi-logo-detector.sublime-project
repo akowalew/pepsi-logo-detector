@@ -1,66 +1,123 @@
 {
-	"folders":
-	[
-		{
-			"path": "."
-		}
-	],
 	"build_systems":
 	[
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"all"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - all",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "all"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"clean"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - clean",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "clean"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"rebuild_cache"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - rebuild_cache",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "rebuild_cache"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"edit_cache"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - edit_cache",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "edit_cache"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"detector"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - detector",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "detector"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"detector/fast"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - detector/fast",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "detector/fast"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"package_source"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - package_source",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "package_source"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		},
 		{
+			"cmd":
+			[
+				"/usr/bin/make",
+				"-f",
+				"Makefile",
+				"package"
+			],
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "pepsi-logo-detector - package",
-			"cmd": ["/usr/bin/make", "-f", "Makefile", "package"],
-			"working_dir": "${project_path}",
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)"
+			"working_dir": "${project_path}"
 		}
 	],
-	"settings": {
-		"ecc_flags_sources": [
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"build"
+			],
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"ecc_flags_sources":
+		[
 			{
 				"file": "CMakeLists.txt",
-	    	  	"prefix_paths": [ "${project_path}/build" ]
+				"prefix_paths":
+				[
+					"${project_path}/build"
+				]
 			}
 		]
 	}
