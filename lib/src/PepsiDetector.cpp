@@ -121,26 +121,6 @@ double calc_points_distance(Point a, Point b) noexcept
 
 } //
 
-/**
- * @brief Default constructor for PepsiDetector's Config. Provides default values for params
- */
-PepsiDetector::Config::Config()
-    :   blue_range{{{100, 75, 0}}, {{130, 255, 255}}}
-    ,   blue_blob_area_range{200, 1000000}
-    ,   blue_blob_hu0_range{0.30, 0.41}
-    ,   blue_blob_hu1_range{0.05, 0.10}
-
-    ,   red_ranges{{
-            {{{0, 75, 75}}, {{10, 255, 255}}},
-            {{{165, 75, 75}}, {{180, 255, 255}}}
-        }}
-    ,   red_blob_area_range{500, 3000}
-    ,	red_blob_hu0_range{0.18, 0.20}
-	,	red_blob_hu1_range{0.006, 0.015}
-
-    ,   max_blobs_centers_distance{30.0}
-{}
-
 // PepsiDetector implementation
 
 PepsiDetector::Impl::Impl(const Config& config)
@@ -153,8 +133,8 @@ Logos PepsiDetector::Impl::find_logos(const cv::Mat& img) const
     cv::moveWindow("Original", 0, 0);
 
     const auto hsv = convert_image(img);
-    const auto blue_blobs = extract_blue_blobs(hsv);
     const auto red_blobs = extract_red_blobs(hsv);
+    const auto blue_blobs = extract_blue_blobs(hsv);
     return match_blobs(red_blobs, blue_blobs);
 }
 
@@ -218,7 +198,12 @@ Blobs PepsiDetector::Impl::extract_red_blobs(const cv::Mat& hsv) const
 
 Blobs PepsiDetector::Impl::find_red_blobs(const cv::Mat& hsv) const
 {
-    auto color_mask = extract_colors(hsv, { m_config.red_ranges.begin(), m_config.red_ranges.end() });
+    auto left_red_range = m_config.red_range;
+    auto right_red_range = m_config.red_range;
+    left_red_range.min[0] = 0;
+    right_red_range.max[0] = 180;
+
+    auto color_mask = extract_colors(hsv, {left_red_range, right_red_range});
     filter_color_mask(color_mask);
 
     auto red_blobs = find_blobs(color_mask);

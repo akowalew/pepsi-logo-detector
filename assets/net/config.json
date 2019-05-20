@@ -1,0 +1,13 @@
+{
+	"blue_range": { "min": [100, 100, 50], "max": [130, 255, 255] },
+	"blue_blob_area_range": { "min": 100, "max": 2500 },
+	"blue_blob_hu0_range": { "min": 0.20, "max": 0.45 },
+	"blue_blob_hu1_range": { "min": 0.01, "max": 0.15 },
+
+	"red_range": { "min": [165, 100, 75], "max": [10, 255, 255] },
+	"red_blob_area_range": { "min": 100, "max": 3000 },
+	"red_blob_hu0_range": { "min": 0.16, "max": 0.22 },
+	"red_blob_hu1_range": { "min": 0.001, "max": 0.022 },
+
+	"max_blobs_centers_distance": 30.0
+}

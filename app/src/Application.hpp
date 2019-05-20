@@ -8,8 +8,9 @@ public:
 	struct Options
 	{
 		bool verbose;
-		std::string ifile;
-		std::string ofile;
+		std::string src_file;
+		std::string dst_file;
+		std::string config_file;
 	};
 
 	Application(Options options);

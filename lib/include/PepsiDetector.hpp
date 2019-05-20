@@ -5,6 +5,8 @@
 #include <array>
 #include <memory>
 
+#include <nlohmann/json.hpp>
+
 #include "moments.hpp"
 
 class PepsiDetector
@@ -15,12 +17,14 @@ public:
 	{
         Config();
 
+        static Config from_json(const nlohmann::json& json);
+
 		ColorRange blue_range;
 		BlobAreaRange blue_blob_area_range;
 		HuMomentRange blue_blob_hu0_range;
 		HuMomentRange blue_blob_hu1_range;
 
-		std::array<ColorRange, 2> red_ranges;
+		ColorRange red_range;
 		BlobAreaRange red_blob_area_range;
 		HuMomentRange red_blob_hu0_range;
 		HuMomentRange red_blob_hu1_range;

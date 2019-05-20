@@ -8,20 +8,37 @@
 
 int main(int argc, char** argv)
 {
-    CLI::App cli{"Detects logo of PEPSI drink in images and marks them"};
+    CLI::App cli{"Finds logo of PEPSI drink in images and marks them"};
 
     auto app_options = Application::Options{};
     cli.add_flag("-v,--verbose", app_options.verbose,
                  "Prints diagnostic messages");
-    cli.add_option("-i,--ifile,ifile", app_options.ifile,
-                   "Path to existing input file. If not specified, reads from stdin");
-    cli.add_option("-o,--ofile,ofile", app_options.ofile,
-                   "Path for output file. If not specified, prints to stdout");
+    cli.add_option("--src,src", app_options.src_file,
+                   "Path to existing input file")
+        ->required()
+        ->check(CLI::ExistingFile);
+    cli.add_option("--dst,dst", app_options.dst_file,
+                   "Path for output file. If ommited, displays image in a window");
+    cli.add_option("--cfg,cfg", app_options.config_file,
+                   "Path for configuration JSON file. If ommited, searches for them in image directory");
 
     CLI11_PARSE(cli, argc, argv);
 
-    auto app = Application{app_options};
-    return app.exec();
+    try
+    {
+        auto app = Application{app_options};
+        return app.exec();
+    }
+    catch(std::exception& ex)
+    {
+        printf("Error: %s\n", ex.what());
+        return -1;
+    }
+    catch(...)
+    {
+        printf("Unexpected error occured.\n");
+        return -1;
+    }
 }
 
 
