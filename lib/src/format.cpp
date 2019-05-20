@@ -4,16 +4,16 @@
 
 namespace {
 
-inline uchar calc_hue(uchar blue, uchar green, uchar red, uchar min, uchar max)
+inline uchar calc_hue(uchar blue, uchar green, uchar red, uchar max, uchar diff)
 {
-	if(min == max)
+	if(diff == 0)
 	{
 		assert(red == green && green == blue);
 		return 0;
 	}
 
 	double hue = 60.0;
-	const auto den = static_cast<double>(max - min);
+	const auto den = static_cast<double>(diff);
 	if(max == red)
 	{
 		hue *= (0 + (green - blue) / den);
@@ -37,16 +37,14 @@ inline uchar calc_hue(uchar blue, uchar green, uchar red, uchar min, uchar max)
 	return static_cast<uchar>(hue / 2);
 }
 
-inline uchar calc_saturation(uchar blue, uchar green, uchar red, uchar min, uchar max)
+inline uchar calc_saturation(uchar max, uchar diff)
 {
 	if(max == 0)
 	{
-		assert(red == 0 && green == 0 && blue == 0);
 		return 0;
 	}
 
-	const auto diff = static_cast<double>((max - min) * 255);
-	return static_cast<uchar>(diff / max);
+	return static_cast<uchar>((diff * 255.0) / max);
 }
 
 } // namespace
@@ -69,8 +67,9 @@ void bgr2hsv(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<cv::Vec3b>& dst)
 		const auto min = std::min({blue, green, red});
 		const auto max = std::max({blue, green, red});
 
-		const auto hue = calc_hue(blue, green, red, min, max);
-		const auto saturation = calc_saturation(blue, green, red, min, max);
+		const auto diff = (max - min);
+		const auto hue = calc_hue(blue, green, red, max, diff);
+		const auto saturation = calc_saturation(max, diff);
 		const auto value = max;
 
 		*(dst_it++) = hue;
