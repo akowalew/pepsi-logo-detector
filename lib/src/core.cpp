@@ -51,3 +51,15 @@ void bitwise_or(const cv::Mat_<uchar>& src1, const cv::Mat_<uchar>& src2, cv::Ma
         *(dst_ptr++) = (*(src1_ptr++) | *(src2_ptr++));
     }
 }
+
+bool images_equal(const cv::Mat& img1, const cv::Mat& img2)
+{
+    assert(img1.size() == img2.size());
+    assert(img1.channels() == img2.channels());
+    assert(img1.depth() == img2.depth());
+    assert(img1.isContinuous());
+    assert(img2.isContinuous());
+
+    assert(img1.data == img1.datastart);
+    return (std::memcmp(img1.data, img2.data, img1.dataend - img1.datastart) == 0);
+}
