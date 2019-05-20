@@ -114,6 +114,10 @@
 		[
 			{
 				"file": "CMakeLists.txt",
+				"flags":
+				[
+			    	"-DCMAKE_CXX_COMPILER=g++-8"
+				],
 				"prefix_paths":
 				[
 					"${project_path}/build"
