@@ -1,6 +1,7 @@
 add_executable(detector_test
 	core_test.cpp
 	blobs_test.cpp
+	format_test.cpp
 	moments_test.cpp
 	PepsiDetector_test.cpp
 	tests_main.cpp

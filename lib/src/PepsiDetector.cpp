@@ -147,7 +147,7 @@ const PepsiDetector::Config& PepsiDetector::Impl::config() const noexcept
 
 cv::Mat PepsiDetector::Impl::convert_image(const cv::Mat& img) const
 {
-    auto hsv = cv::Mat{img.size(), CV_8UC3};
+    auto hsv = cv::Mat_<cv::Vec3b>{img.size()};
     bgr2hsv(img, hsv);
     return hsv;
 }

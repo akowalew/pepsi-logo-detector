@@ -2,7 +2,6 @@
 add_library(detector
 	src/blobs.cpp include/blobs.hpp
 	src/core.cpp include/core.hpp
-	src/features.cpp include/features.hpp
 	src/format.cpp include/format.hpp
 	src/moments.cpp include/moments.hpp
 	src/morpho.cpp include/morpho.hpp
