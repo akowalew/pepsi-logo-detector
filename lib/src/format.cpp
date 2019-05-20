@@ -2,11 +2,79 @@
 
 #include <opencv2/imgproc.hpp>
 
+namespace {
+
+inline uchar calc_hue(uchar blue, uchar green, uchar red, uchar min, uchar max)
+{
+	if(min == max)
+	{
+		assert(red == green && green == blue);
+		return 0;
+	}
+
+	double hue = 60.0;
+	const auto den = static_cast<double>(max - min);
+	if(max == red)
+	{
+		hue *= (0 + (green - blue) / den);
+	}
+	else if(max == green)
+	{
+		hue *= (2 + (blue - red) / den);
+	}
+	else
+	{
+		assert(max == blue);
+		hue *= (4 + (red - green) / den);
+	}
+
+	if(hue < 0)
+	{
+		hue += 360;
+	}
+
+	// Target hue must be divided by two to fit in [0, 180] degree range
+	return static_cast<uchar>(hue / 2);
+}
+
+inline uchar calc_saturation(uchar blue, uchar green, uchar red, uchar min, uchar max)
+{
+	if(max == 0)
+	{
+		assert(red == 0 && green == 0 && blue == 0);
+		return 0;
+	}
+
+	const auto diff = static_cast<double>((max - min) * 255);
+	return static_cast<uchar>(diff / max);
+}
+
+} // namespace
+
 void bgr2hsv(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<cv::Vec3b>& dst)
 {
 	CV_Assert(src.size() == dst.size());
-	CV_Assert(src.channels() == 3);
-	CV_Assert(dst.channels() == 3);
+	CV_Assert(src.isContinuous());
+	CV_Assert(dst.isContinuous());
 
-	cv::cvtColor(src, dst, cv::COLOR_BGR2HSV);
+	auto src_it = src.data;
+	auto dst_it = dst.data;
+	const auto dst_end = dst.dataend;
+	while(dst_it != dst_end)
+	{
+		const auto blue = *(src_it++);
+		const auto green = *(src_it++);
+		const auto red = *(src_it++);
+
+		const auto min = std::min({blue, green, red});
+		const auto max = std::max({blue, green, red});
+
+		const auto hue = calc_hue(blue, green, red, min, max);
+		const auto saturation = calc_saturation(blue, green, red, min, max);
+		const auto value = max;
+
+		*(dst_it++) = hue;
+		*(dst_it++) = saturation;
+		*(dst_it++) = value;
+	}
 }
