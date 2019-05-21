@@ -3,7 +3,8 @@ add_executable(detector_test
 	blobs_test.cpp
 	format_test.cpp
 	moments_test.cpp
-	PepsiDetector_test.cpp
+	morpho_test.cpp
+	# PepsiDetector_test.cpp
 	tests_main.cpp
 )
 
