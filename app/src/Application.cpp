@@ -1,9 +1,7 @@
 #include "Application.hpp"
 
 #include <cstdio>
-#include <unistd.h>
 
-#include <sstream>
 #include <fstream>
 #include <filesystem>
 
@@ -57,7 +55,9 @@ void draw_logos(cv::Mat& dst, const Logos& logos)
 {
 	for(const auto& logo : logos)
 	{
-		cv::rectangle(dst, logo, cv::Scalar{0, 255, 0});
+		const auto color = cv::Scalar{0, 255, 0};
+		const auto thickness = 1;
+		cv::rectangle(dst, logo, color, thickness);
 	}
 }
 
