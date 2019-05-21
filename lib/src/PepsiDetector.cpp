@@ -29,10 +29,10 @@ void print_moments(const HuMomentsArray& hu_moments)
     {
         for(const auto moment : hu)
         {
-            // printf("%8.8lf ", moment);
+            printf("%8.8lf ", moment);
         }
 
-        // printf("\n");
+        printf("\n");
     }
 }
 
@@ -48,8 +48,8 @@ void display_blobs(cv::Size mat_size, const Blobs& blobs, const char* window_nam
         }
     }
 
-    cv::imshow(window_name, mat);
-    cv::moveWindow(window_name, 0, 0);
+    // cv::imshow(window_name, mat);
+    // cv::moveWindow(window_name, 0, 0);
 }
 
 BlobAnchors get_blob_anchors(const Blob& blob)
@@ -130,8 +130,8 @@ PepsiDetector::Impl::Impl(const Config& config)
 
 Logos PepsiDetector::Impl::find_logos(const cv::Mat& img) const
 {
-    cv::imshow("Original", img);
-    cv::moveWindow("Original", 0, 0);
+    // cv::imshow("Original", img);
+    // cv::moveWindow("Original", 0, 0);
 
     const auto hsv = convert_image(img);
     const auto red_blobs = extract_red_blobs(hsv);
@@ -161,7 +161,7 @@ Blobs PepsiDetector::Impl::extract_blue_blobs(const cv::Mat& hsv) const
 
     auto blobs_hu_moments = calc_blobs_hu_moments(blobs);
     // printf("After by area filtering:\n");
-    print_moments(blobs_hu_moments);
+    // print_moments(blobs_hu_moments);
 
     filter_blobs_by_hu_moments(blobs, blobs_hu_moments,
                                m_config.blue_blob_hu0_range,
@@ -169,7 +169,7 @@ Blobs PepsiDetector::Impl::extract_blue_blobs(const cv::Mat& hsv) const
 
     blobs_hu_moments = calc_blobs_hu_moments(blobs);
     // printf("After by hu filtering:\n");
-    print_moments(blobs_hu_moments);
+    // print_moments(blobs_hu_moments);
 
     display_blobs(hsv.size(), blobs, "Blue blobs final");
     return blobs;
@@ -183,7 +183,7 @@ Blobs PepsiDetector::Impl::extract_red_blobs(const cv::Mat& hsv) const
 
     auto blobs_hu_moments = calc_blobs_hu_moments(blobs);
     // printf("After by area filtering:\n");
-    print_moments(blobs_hu_moments);
+    // print_moments(blobs_hu_moments);
 
     filter_blobs_by_hu_moments(blobs, blobs_hu_moments,
                                m_config.red_blob_hu0_range,
@@ -191,7 +191,7 @@ Blobs PepsiDetector::Impl::extract_red_blobs(const cv::Mat& hsv) const
 
     blobs_hu_moments = calc_blobs_hu_moments(blobs);
     // printf("After by hu filtering:\n");
-    print_moments(blobs_hu_moments);
+    // print_moments(blobs_hu_moments);
 
     display_blobs(hsv.size(), blobs, "Red blobs final");
     return blobs;
@@ -286,8 +286,8 @@ cv::Mat_<uchar> PepsiDetector::Impl::extract_color(const cv::Mat& hsv, const Col
     auto mask = cv::Mat_<uchar>{hsv.size()};
     threshold(cv::Mat_<cv::Vec3b>(hsv), mask, adapt_array(range.min), adapt_array(range.max));
 
-    cv::imshow("Color mask", mask);
-    cv::moveWindow("Color mask", 0, 0);
+    // cv::imshow("Color mask", mask);
+    // cv::moveWindow("Color mask", 0, 0);
 
     return mask;
 }
@@ -302,8 +302,8 @@ cv::Mat_<uchar> PepsiDetector::Impl::extract_colors(const cv::Mat& hsv, const Co
         bitwise_or(color_mask, result_mask, result_mask);
     }
 
-    cv::imshow("Color mask", result_mask);
-    cv::moveWindow("Color mask", 0, 0);
+    // cv::imshow("Color mask", result_mask);
+    // cv::moveWindow("Color mask", 0, 0);
 
     return result_mask;
 }
@@ -316,8 +316,8 @@ void PepsiDetector::Impl::filter_color_mask(cv::Mat_<uchar>& color_mask) const
     erode(color_mask, tmp, kernel);
     dilate(tmp, color_mask, kernel);
 
-    cv::imshow("Color mask filtered", color_mask);
-    cv::moveWindow("Color mask filtered", 0, 0);
+    // cv::imshow("Color mask filtered", color_mask);
+    // cv::moveWindow("Color mask filtered", 0, 0);
 }
 
 Blobs::iterator PepsiDetector::Impl::filter_blobs_by_area(Blobs& blobs, BlobAreaRange blob_area_range) const
