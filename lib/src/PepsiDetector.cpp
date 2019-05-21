@@ -311,8 +311,10 @@ cv::Mat_<uchar> PepsiDetector::Impl::extract_colors(const cv::Mat& hsv, const Co
 void PepsiDetector::Impl::filter_color_mask(cv::Mat_<uchar>& color_mask) const
 {
     const cv::Mat_<uchar> kernel = cv::Mat_<uchar>::ones(cv::Size{3, 3});
-    erode(color_mask, color_mask, kernel);
-    dilate(color_mask, color_mask, kernel);
+    auto tmp = cv::Mat_<uchar>(color_mask.size());
+
+    erode(color_mask, tmp, kernel);
+    dilate(tmp, color_mask, kernel);
 
     cv::imshow("Color mask filtered", color_mask);
     cv::moveWindow("Color mask filtered", 0, 0);
