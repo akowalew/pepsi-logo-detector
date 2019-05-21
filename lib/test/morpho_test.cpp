@@ -18,7 +18,7 @@ void debug_binary(const cv::Mat_<uchar>& binary)
 	putchar('\n');
 }
 
-void rectangle_centered(const cv::Mat_<uchar> img, cv::Size size, uchar color, int thickness = 1)
+void rectangle_centered(cv::Mat_<uchar>& img, cv::Size size, uchar color, int thickness = 1)
 {
 	const auto ncols = img.cols;
 	const auto nrows = img.rows;
@@ -38,6 +38,8 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 	const auto size = cv::Size{8, 8};
 	const auto ncols = size.width;
 	const auto nrows = size.height;
+	const auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
+	auto dst = cv::Mat_<uchar>{size};
 
 	GIVEN("Black image")
 	{
@@ -45,9 +47,18 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
+
+			THEN("Image should be also black")
+			{
+				const auto target = cv::Mat_<uchar>{size, 0};
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
 
 			THEN("Image should be also black")
 			{
@@ -63,9 +74,18 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
+
+			THEN("Image should be also white")
+			{
+				auto target = cv::Mat_<uchar>{size, 255};
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
 
 			THEN("Image should be also white")
 			{
@@ -91,13 +111,22 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
 
 			THEN("Result image should be black")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
+
+			THEN("White image should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 255};
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -110,14 +139,24 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
 
 			THEN("Black image with 2x2 white square in center should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
 				rectangle_centered(target, cv::Size{2, 2}, 255, CV_FILLED);
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
+
+			THEN("Black image with 6x6 white square in center should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 0};
+				rectangle_centered(target, cv::Size{6, 6}, 255, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -130,8 +169,6 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
 
 			THEN("Black image with 2xWidth horizontal white strip should be returned")
@@ -139,6 +176,18 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 				auto target = cv::Mat_<uchar>{size, 0};
 				rectangle_centered(target, cv::Size{ncols, 2}, 255, CV_FILLED);
 
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
+
+			THEN("Black image with 6xWidth horizontal white strip should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 0};
+				rectangle_centered(target, cv::Size{ncols, 6}, 255, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -151,8 +200,6 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
-			auto dst = cv::Mat_<uchar>{size};
-			auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
 			erode(src, dst, kernel);
 
 			THEN("White image with 6x6 black square in center should be returned")
@@ -163,26 +210,48 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 				REQUIRE(images_equal(dst, target));
 			}
 		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
+
+			THEN("White image with 2x2 black square in center should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 255};
+				rectangle_centered(target, cv::Size{2, 2}, 0, CV_FILLED);
+				REQUIRE(images_equal(dst, target));
+			}
+		}
 	}
 
-	// GIVEN("White image with horizontal black strip 4xWidth")
-	// {
-	// 	auto src = cv::Mat_<uchar>{size, 255};
-	// 	cv::rectangle(src, {0, nrows/2-2}, {ncols-1, nrows/2+1}, 0, CV_FILLED);
+	GIVEN("White image with horizontal black strip 4xWidth")
+	{
+		auto src = cv::Mat_<uchar>{size, 255};
+		cv::rectangle(src, {0, nrows/2-2}, {ncols-1, nrows/2+1}, 0, CV_FILLED);
 
-	// 	WHEN("Eroding it with square 3x3 kernel")
-	// 	{
-	// 		auto dst = cv::Mat_<uchar>{size};
-	// 		auto kernel = cv::Mat_<uchar>{cv::Size{3, 3}, 255};
-	// 		erode(src, dst, kernel);
+		WHEN("Eroding it with square 3x3 kernel")
+		{
+			erode(src, dst, kernel);
 
-	// 		THEN("Black image with 2xWidth white strip should be returned")
-	// 		{
-	// 			auto target = cv::Mat_<uchar>{size, 0};
-	// 			cv::rectangle(target, {0, nrows/2-1}, {ncols-1, nrows/2}, 255, CV_FILLED);
+			THEN("White image with horizontal 6xWidth black strip should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 255};
+				rectangle_centered(target, cv::Size{ncols, 6}, 0, CV_FILLED);
 
-	// 			REQUIRE(images_equal(dst, target));
-	// 		}
-	// 	}
-	// }
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+
+		WHEN("Dilating it with square 3x3 kernel")
+		{
+			dilate(src, dst, kernel);
+
+			THEN("White image with 2xWidth horizontal black strip should be returned")
+			{
+				auto target = cv::Mat_<uchar>{size, 255};
+				rectangle_centered(target, cv::Size{ncols, 2}, 0, CV_FILLED);
+				REQUIRE(images_equal(dst, target));
+			}
+		}
+	}
 }

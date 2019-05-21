@@ -4,8 +4,6 @@
 
 namespace {
 
-
-
 } // namespace
 
 void dilate(const cv::Mat_<uchar>& src, cv::Mat_<uchar>& dst,
@@ -19,6 +17,7 @@ void erode(const cv::Mat_<uchar>& src, cv::Mat_<uchar>& dst,
 {
 	cv::erode(src, dst, kernel);
 }
+
 // {
 // 	CV_Assert(src.size() == dst.size());
 // 	CV_Assert(src.isContinuous());
