@@ -1,7 +1,7 @@
 {
 	"blue_range": { "min": [100, 75, 0], "max": [130, 255, 255] },
 	"blue_blob_area_range": { "min": 200, "max": 2500 },
-	"blue_blob_hu0_range": { "min": 0.30, "max": 0.45 },
+	"blue_blob_hu0_range": { "min": 0.30, "max": 0.50 },
 	"blue_blob_hu1_range": { "min": 0.05, "max": 0.15 },
 
 	"red_range": { "min": [165, 75, 75], "max": [10, 255, 255] },
