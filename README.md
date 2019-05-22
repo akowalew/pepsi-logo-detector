@@ -9,4 +9,5 @@ Studies project - detecting logo of Pepsi in pictures. Written in modern C++ wit
 - Install conan dependencies: `conan install ..`
 - Configure CMake: `cmake .. -DCMAKE_BUILD_TYPE=<build_type>`
 - Build: `make -j4`
-- Run the program: `./bin/detector`
+- Run the program and pass image to it: `./bin/find_logos assets/camera/<n>.jpg`, where `<n>` is number of image
+- Optionally - run unit tests: `./bin/detector_test`
