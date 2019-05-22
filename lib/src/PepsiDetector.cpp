@@ -172,10 +172,33 @@ Logos PepsiDetector::Impl::find_logos(const cv::Mat& bgr) const
     spdlog::debug("[PepsiDetector] Finding logos...");
     imglog::log("Original", bgr);
 
-    const auto hsv = convert_image(bgr);
+    const auto enhanced = enhance_image(bgr);
+    const auto hsv = convert_image(enhanced);
     const auto blue_blobs = detect_blue_blobs(hsv);
     const auto red_blobs = detect_red_blobs(hsv);
     return match_blobs(red_blobs, blue_blobs);
+}
+
+cv::Mat_<cv::Vec3b> PepsiDetector::Impl::enhance_image(const cv::Mat_<cv::Vec3b>& bgr) const
+{
+    spdlog::debug("Enhancing image...");
+
+    // Unsharp mask kernel 5x5, based on Gaussian blur with amount as 1 and threshold as 0
+    float kernel_data[] = {
+        -1.0/256,  -4.0/256,   -6.0/256,  -4.0/256, -1.0/256,
+        -4.0/256, -16.0/256,  -24.0/256, -16.0/256, -4.0/256,
+        -6.0/256, -24.0/256,  476.0/256, -24.0/256, -6.0/256,
+        -4.0/256, -16.0/256,  -24.0/256, -16.0/256, -4.0/256,
+        -1.0/256,  -4.0/256,   -6.0/256,  -4.0/256, -1.0/256,
+    };
+
+    auto kernel = cv::Mat(5, 5, CV_32F, kernel_data);
+    auto enhanced = cv::Mat_<cv::Vec3b>{bgr.size()};
+
+    filter_image(bgr, enhanced, kernel);
+    imglog::log("Image enhanced", enhanced);
+
+    return enhanced;
 }
 
 cv::Mat_<cv::Vec3b> PepsiDetector::Impl::convert_image(const cv::Mat_<cv::Vec3b>& bgr) const

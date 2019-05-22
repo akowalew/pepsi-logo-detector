@@ -30,7 +30,7 @@ void draw_blobs_randomly(const Blobs& blobs, cv::Mat_<cv::Vec3b>& img)
 	}
 }
 
-void draw_rectangle_centered(cv::Mat_<uchar>& img, cv::Size size, uchar color, int thickness = 1)
+void draw_rectangle_centered(cv::Mat_<uchar>& img, cv::Size size, uchar color, int thickness)
 {
 	const auto ncols = img.cols;
 	const auto nrows = img.rows;

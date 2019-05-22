@@ -12,6 +12,8 @@ public:
     Logos find_logos(const cv::Mat& bgr) const;
 
 private:
+	cv::Mat_<cv::Vec3b> enhance_image(const cv::Mat_<cv::Vec3b>& bgr) const;
+
 	cv::Mat_<cv::Vec3b> convert_image(const cv::Mat_<cv::Vec3b>& bgr) const;
 
 	Blobs detect_blue_blobs(const cv::Mat_<cv::Vec3b>& hsv) const;

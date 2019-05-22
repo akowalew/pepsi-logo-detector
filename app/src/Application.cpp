@@ -19,7 +19,7 @@ cv::Mat read_image(const std::string& src_file, int flags)
 {
 	assert(!src_file.empty());
 
-	auto img = cv::imread(src_file, flags);
+	const auto img = cv::imread(src_file, flags);
 	if(img.empty())
 	{
 		throw std::runtime_error("Image input file invalid");
