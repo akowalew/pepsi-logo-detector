@@ -7,7 +7,6 @@ class Application
 public:
 	struct Options
 	{
-		bool verbose;
 		std::string src_file;
 		std::string dst_file;
 		std::string config_file;

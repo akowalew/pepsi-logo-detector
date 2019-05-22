@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <chrono>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+
 #include "blobs.hpp"
 #include "core.hpp"
 #include "format.hpp"
@@ -23,17 +26,40 @@ struct BlobAnchors
 
 using BlobsAnchors = std::vector<BlobAnchors>;
 
-void print_moments(const HuMomentsArray& hu_moments)
+std::ostream& operator<<(std::ostream& os, const HuMoments& hu_moments)
 {
-    for(const auto& hu : hu_moments)
+    for(const auto hu_moment : hu_moments)
     {
-        for(const auto moment : hu)
-        {
-            printf("%8.8lf ", moment);
-        }
-
-        printf("\n");
+        os << hu_moment << ", ";
     }
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const HuMomentsArray& hu_moments_array)
+{
+    for(const auto& hu_moments : hu_moments_array)
+    {
+        os << hu_moments << '\n';
+    }
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, Point point)
+{
+    os << '(' << point.x << ", " << point.y << ')';
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Points& points)
+{
+    for(const auto point : points)
+    {
+        os << point << ' ';
+    }
+
+    return os;
 }
 
 void display_blobs(cv::Size mat_size, const Blobs& blobs, const char* window_name)
@@ -110,6 +136,7 @@ Points get_blobs_centers(const BlobsAnchors& blobs_anchors)
     std::transform(blobs_anchors.begin(), blobs_anchors.end(),
                    std::back_inserter(blobs_centers),
                    get_blob_center);
+
     return blobs_centers;
 }
 
@@ -126,13 +153,14 @@ double calc_points_distance(Point a, Point b) noexcept
 
 PepsiDetector::Impl::Impl(const Config& config)
     :   m_config(config)
-{}
+{
+    spdlog::debug("[PepsiDetector] Initialized");
+}
 
 Logos PepsiDetector::Impl::find_logos(const cv::Mat& img) const
 {
     // cv::imshow("Original", img);
     // cv::moveWindow("Original", 0, 0);
-
     const auto hsv = convert_image(img);
     const auto red_blobs = extract_red_blobs(hsv);
     const auto blue_blobs = extract_blue_blobs(hsv);
@@ -160,16 +188,14 @@ Blobs PepsiDetector::Impl::extract_blue_blobs(const cv::Mat& hsv) const
     filter_blobs_by_area(blobs, m_config.blue_blob_area_range);
 
     auto blobs_hu_moments = calc_blobs_hu_moments(blobs);
-    // printf("After by area filtering:\n");
-    // print_moments(blobs_hu_moments);
+    spdlog::debug("After by area filtering:\n{}", blobs_hu_moments);
 
     filter_blobs_by_hu_moments(blobs, blobs_hu_moments,
                                m_config.blue_blob_hu0_range,
                                m_config.blue_blob_hu1_range);
 
     blobs_hu_moments = calc_blobs_hu_moments(blobs);
-    // printf("After by hu filtering:\n");
-    // print_moments(blobs_hu_moments);
+    spdlog::debug("After by hu filtering:\n{}", blobs_hu_moments);
 
     display_blobs(hsv.size(), blobs, "Blue blobs final");
     return blobs;
@@ -182,16 +208,14 @@ Blobs PepsiDetector::Impl::extract_red_blobs(const cv::Mat& hsv) const
     filter_blobs_by_area(blobs, m_config.red_blob_area_range);
 
     auto blobs_hu_moments = calc_blobs_hu_moments(blobs);
-    // printf("After by area filtering:\n");
-    // print_moments(blobs_hu_moments);
+    spdlog::debug("After by area filtering:\n{}", blobs_hu_moments);
 
     filter_blobs_by_hu_moments(blobs, blobs_hu_moments,
                                m_config.red_blob_hu0_range,
                                m_config.red_blob_hu1_range);
 
     blobs_hu_moments = calc_blobs_hu_moments(blobs);
-    // printf("After by hu filtering:\n");
-    // print_moments(blobs_hu_moments);
+    spdlog::debug("After by hu filtering:\n{}", blobs_hu_moments);
 
     display_blobs(hsv.size(), blobs, "Red blobs final");
     return blobs;
@@ -242,19 +266,8 @@ Logos PepsiDetector::Impl::match_blobs(const Blobs& red_blobs, const Blobs& blue
     const auto blue_anchors = get_blobs_anchors(blue_blobs);
     const auto blue_centers = get_blobs_centers(blue_anchors);
 
-    // printf("Red centers: ");
-    for(const auto red_center : red_centers)
-    {
-        // printf("(%d,%d) ", red_center.x, red_center.y);
-    }
-    // printf("\n");
-
-    // printf("Blue centers: ");
-    for(const auto blue_center : blue_centers)
-    {
-        // printf("(%d,%d) ", blue_center.x, blue_center.y);
-    }
-    // printf("\n");
+    spdlog::debug("Red centers: {}", red_centers);
+    spdlog::debug("Blue centers: {}", blue_centers);
 
     Logos logos;
     const auto logos_max = std::min(red_blobs.size(), blue_blobs.size());

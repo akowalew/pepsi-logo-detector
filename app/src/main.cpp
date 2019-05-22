@@ -2,7 +2,10 @@
 
 #include "PepsiDetector.hpp"
 
-#include "CLI/CLI.hpp"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <CLI/CLI.hpp>
 
 #include "Application.hpp"
 
@@ -11,8 +14,6 @@ int main(int argc, char** argv)
     CLI::App cli{"Finds logo of PEPSI drink in images and marks them"};
 
     auto app_options = Application::Options{};
-    cli.add_flag("-v,--verbose", app_options.verbose,
-                 "Prints diagnostic messages");
     cli.add_option("--src,src", app_options.src_file,
                    "Path to existing input file")
         ->required()
@@ -22,7 +23,13 @@ int main(int argc, char** argv)
     cli.add_option("--cfg,cfg", app_options.config_file,
                    "Path for configuration JSON file. If ommited, searches for them in image directory");
 
+    bool verbose;
+    cli.add_flag("-v,--verbose", verbose,
+                 "Prints diagnostic messages");
+
     CLI11_PARSE(cli, argc, argv);
+
+    spdlog::set_level(verbose ? spdlog::level::debug : spdlog::level::warn);
 
     try
     {
