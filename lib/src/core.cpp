@@ -85,51 +85,53 @@ void filter_image(const cv::Mat3b& src, cv::Mat3b& dst, const cv::Mat1f& kernel)
     const auto anchor_y = (height/2);
 
     auto dst_ptr = dst.data;
+    auto src_ptr_start = (src.data - 3*((anchor_y*ncols) + anchor_x));
     for(auto y = 0; y < nrows; ++y)
     {
-        for(auto x = 0; x < ncols; ++x)
+        for(auto x = 0; x < ncols; ++x, src_ptr_start += 3)
         {
             auto accu = cv::Vec3f::all(0.0f);
-
+            auto kernel_ptr = reinterpret_cast<float*>(kernel.data);
+            auto src_ptr = src_ptr_start;
             for(auto ky = 0; ky < height; ++ky)
             {
-                for(auto kx = 0; kx < width; ++kx)
+                for(auto kx = 0; kx < width; ++kx, ++kernel_ptr, src_ptr += 3)
                 {
                     const auto src_y = y + ky - anchor_y;
-                    if(src_y < 0 || src_y >= nrows)
-                    {
-                        continue;
-                    }
-
                     const auto src_x = x + kx - anchor_x;
-                    if(src_x < 0 || src_x >= ncols)
+
+                    if(src_y < 0 || src_y >= nrows || src_x < 0 || src_x >= ncols)
                     {
                         continue;
                     }
 
                     assert(src_y >= 0 && src_y < nrows);
                     assert(src_x >= 0 && src_x < ncols);
-                    const auto src_v = src(src_y, src_x);
+                    assert(src_ptr >= src.data && src_ptr+2 < src.dataend);
+                    const auto src_v0 = *(src_ptr);
+                    const auto src_v1 = *(src_ptr + 1);
+                    const auto src_v2 = *(src_ptr + 2);
 
                     assert(ky >= 0 && ky < height);
                     assert(kx >= 0 && kx < width);
-                    const auto k_v = kernel(ky, kx);
+                    assert((uchar*)kernel_ptr >= kernel.data && (uchar*)kernel_ptr < kernel.dataend);
+                    const auto k_v = *kernel_ptr;
 
-                    accu[0] += (k_v * src_v[0]);
-                    accu[1] += (k_v * src_v[1]);
-                    accu[2] += (k_v * src_v[2]);
+                    accu[0] += (k_v * src_v0);
+                    accu[1] += (k_v * src_v1);
+                    accu[2] += (k_v * src_v2);
                 }
+
+                src_ptr += (3*(ncols - width));
             }
 
             clamp(accu[0], 0.0f, 255.0f);
             clamp(accu[1], 0.0f, 255.0f);
             clamp(accu[2], 0.0f, 255.0f);
 
-            assert(dst_ptr >= dst.data && dst_ptr < dst.dataend);
+            assert(dst_ptr >= dst.data && dst_ptr+2 < dst.dataend);
             *(dst_ptr++) = static_cast<uchar>(accu[0]);
-            assert(dst_ptr >= dst.data && dst_ptr < dst.dataend);
             *(dst_ptr++) = static_cast<uchar>(accu[1]);
-            assert(dst_ptr >= dst.data && dst_ptr < dst.dataend);
             *(dst_ptr++) = static_cast<uchar>(accu[2]);
         }
     }
