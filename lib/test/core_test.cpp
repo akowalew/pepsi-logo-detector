@@ -13,7 +13,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{0, 0, 0};
 			const auto max = cv::Vec3b{255, 255, 255};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("All pixels should be marked")
 			{
@@ -27,7 +27,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{0, 0, 0};
 			const auto max = cv::Vec3b{0, 0, 0};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("All pixels should be marked")
 			{
@@ -41,7 +41,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{1, 1, 1};
 			const auto max = cv::Vec3b{255, 255, 255};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("No pixel should be marked")
 			{
@@ -64,7 +64,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{0, 0, 0};
 			const auto max = cv::Vec3b{255, 255, 255};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("All pixels should be marked")
 			{
@@ -78,7 +78,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{0, 0, 0};
 			const auto max = cv::Vec3b{254, 254, 254};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("No pixel should be marked")
 			{
@@ -92,7 +92,7 @@ SCENARIO("Color images can be thresholded from both sides", "[threshold]")
 			const auto min = cv::Vec3b{254, 254, 254};
 			const auto max = cv::Vec3b{255, 255, 255};
 			auto dst = cv::Mat_<uchar>{src.size()};
-			threshold(src, dst, min, max);
+			threshold(src, dst, ColorRange{min, max});
 
 			THEN("All pixels should be marked")
 			{

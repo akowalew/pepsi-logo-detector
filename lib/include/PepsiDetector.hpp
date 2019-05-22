@@ -42,9 +42,6 @@ public:
 	PepsiDetector& operator=(PepsiDetector&& other);
 
 	Logos find_logos(const cv::Mat& img) const override;
-	void train() override;
-
-	const Config& config() const noexcept;
 
 private:
 	class Impl;

@@ -18,5 +18,5 @@ struct ValueRange
 	T max;
 };
 
-using ColorRange = ValueRange<std::array<uchar, 3>>;
+using ColorRange = ValueRange<cv::Vec3b>;
 using ColorRanges = std::vector<ColorRange>;

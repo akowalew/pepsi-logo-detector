@@ -3,7 +3,7 @@
 #include <opencv2/imgproc.hpp>
 
 void threshold(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<uchar>& dst,
-			   cv::Vec3b min, cv::Vec3b max)
+			   const ColorRange& color_range)
 {
 	CV_Assert(src.size() == dst.size());
 	CV_Assert(src.isContinuous());
@@ -19,9 +19,9 @@ void threshold(const cv::Mat_<cv::Vec3b>& src, cv::Mat_<uchar>& dst,
     	const auto b = *(src_ptr++);
     	const auto c = *(src_ptr++);
 
-    	if(a >= min[0] && a <= max[0]
-    		&& b >= min[1] && b <= max[1]
-    		&& c >= min[2] && c <= max[2])
+    	if(a >= color_range.min[0] && a <= color_range.max[0]
+    		&& b >= color_range.min[1] && b <= color_range.max[1]
+    		&& c >= color_range.min[2] && c <= color_range.max[2])
     	{
     		*(dst_ptr) = 255;
     	}

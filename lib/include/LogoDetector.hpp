@@ -14,6 +14,4 @@ public:
 	virtual ~LogoDetector() = default;
 
 	virtual Logos find_logos(const cv::Mat& img) const = 0;
-
-	virtual void train() = 0;
 };

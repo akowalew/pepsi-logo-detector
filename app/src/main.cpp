@@ -8,6 +8,7 @@
 #include <CLI/CLI.hpp>
 
 #include "Application.hpp"
+#include "imglog.hpp"
 
 int main(int argc, char** argv)
 {
@@ -29,7 +30,16 @@ int main(int argc, char** argv)
 
     CLI11_PARSE(cli, argc, argv);
 
-    spdlog::set_level(verbose ? spdlog::level::debug : spdlog::level::warn);
+    if(verbose)
+    {
+        spdlog::set_level(spdlog::level::debug);
+        imglog::enable();
+    }
+    else
+    {
+        spdlog::set_level(spdlog::level::info);
+        imglog::disable();
+    }
 
     try
     {

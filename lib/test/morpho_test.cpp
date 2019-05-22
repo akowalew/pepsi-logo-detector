@@ -1,7 +1,9 @@
 #include "catch2/catch.hpp"
 
 #include "morpho.hpp"
+
 #include "core.hpp"
+#include "drawing.hpp"
 
 namespace {
 
@@ -16,19 +18,6 @@ void debug_binary(const cv::Mat_<uchar>& binary)
 		putchar('\n');
 	}
 	putchar('\n');
-}
-
-void rectangle_centered(cv::Mat_<uchar>& img, cv::Size size, uchar color, int thickness = 1)
-{
-	const auto ncols = img.cols;
-	const auto nrows = img.rows;
-	const auto width = size.width;
-	const auto height = size.height;
-	cv::rectangle(img,
-		          {ncols/2 - width/2, nrows/2 - height/2},
-		          {ncols/2 + width/2 - 1, nrows/2 + height/2 - 1},
-		          color,
-		          thickness);
 }
 
 } //
@@ -135,7 +124,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 	GIVEN("Black image with 4x4 white square in center")
 	{
 		auto src = cv::Mat_<uchar>{size, 0};
-		rectangle_centered(src, cv::Size{4, 4}, 255, CV_FILLED);
+		draw_rectangle_centered(src, cv::Size{4, 4}, 255, CV_FILLED);
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
@@ -144,7 +133,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("Black image with 2x2 white square in center should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
-				rectangle_centered(target, cv::Size{2, 2}, 255, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{2, 2}, 255, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -156,7 +145,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("Black image with 6x6 white square in center should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
-				rectangle_centered(target, cv::Size{6, 6}, 255, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{6, 6}, 255, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -165,7 +154,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 	GIVEN("Black image with 4xWidth horizontal white strip")
 	{
 		auto src = cv::Mat_<uchar>{size, 0};
-		rectangle_centered(src, cv::Size{ncols, 4}, 255, CV_FILLED);
+		draw_rectangle_centered(src, cv::Size{ncols, 4}, 255, CV_FILLED);
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
@@ -174,7 +163,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("Black image with 2xWidth horizontal white strip should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
-				rectangle_centered(target, cv::Size{ncols, 2}, 255, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{ncols, 2}, 255, CV_FILLED);
 
 				REQUIRE(images_equal(dst, target));
 			}
@@ -187,7 +176,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("Black image with 6xWidth horizontal white strip should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 0};
-				rectangle_centered(target, cv::Size{ncols, 6}, 255, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{ncols, 6}, 255, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -196,7 +185,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 	GIVEN("White image with 4x4 black square in center")
 	{
 		auto src = cv::Mat_<uchar>{size, 255};
-		rectangle_centered(src, cv::Size{4, 4}, 0, CV_FILLED);
+		draw_rectangle_centered(src, cv::Size{4, 4}, 0, CV_FILLED);
 
 		WHEN("Eroding it with square 3x3 kernel")
 		{
@@ -205,7 +194,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("White image with 6x6 black square in center should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 255};
-				rectangle_centered(target, cv::Size{6, 6}, 0, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{6, 6}, 0, CV_FILLED);
 
 				REQUIRE(images_equal(dst, target));
 			}
@@ -218,7 +207,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("White image with 2x2 black square in center should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 255};
-				rectangle_centered(target, cv::Size{2, 2}, 0, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{2, 2}, 0, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
@@ -236,7 +225,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("White image with horizontal 6xWidth black strip should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 255};
-				rectangle_centered(target, cv::Size{ncols, 6}, 0, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{ncols, 6}, 0, CV_FILLED);
 
 				REQUIRE(images_equal(dst, target));
 			}
@@ -249,7 +238,7 @@ SCENARIO("Morphological operations can be applied to binary images", "[morpho]")
 			THEN("White image with 2xWidth horizontal black strip should be returned")
 			{
 				auto target = cv::Mat_<uchar>{size, 255};
-				rectangle_centered(target, cv::Size{ncols, 2}, 0, CV_FILLED);
+				draw_rectangle_centered(target, cv::Size{ncols, 2}, 0, CV_FILLED);
 				REQUIRE(images_equal(dst, target));
 			}
 		}
