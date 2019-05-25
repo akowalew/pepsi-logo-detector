@@ -340,9 +340,9 @@ void PepsiDetector::Impl::filter_blue_blobs(Blobs& blobs) const
 
 bool PepsiDetector::Impl::blobs_centers_matching(Point red_center, Point blue_center) const
 {
-    if(red_center.x < blue_center.x
-        && red_center.y < blue_center.y
-        && calc_points_distance(red_center, blue_center) <= m_config.max_blobs_centers_distance)
+    if(/*red_center.x < blue_center.x
+        && red_center.y < blue_center.y*/
+        /*&&*/ calc_points_distance(red_center, blue_center) <= m_config.max_blobs_centers_distance)
     {
         return true;
     }

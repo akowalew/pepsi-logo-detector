@@ -144,10 +144,10 @@ SCENARIO("Pepsi logos can be found on color image", "[PepsiDetector]")
                     const auto& logos = logos_array[i];
                     const auto& real_logos = REAL_LOGOS_ARRAY[i];
 
-                    printf("Logos: ");
-                    debug_logos(logos);
-                    printf("Real logos: ");
-                    debug_logos(real_logos);
+                    // printf("Logos: ");
+                    // debug_logos(logos);
+                    // printf("Real logos: ");
+                    // debug_logos(real_logos);
                     REQUIRE(logos.size() == real_logos.size());
 
                     for(auto j = 0; j < logos.size(); ++j)
