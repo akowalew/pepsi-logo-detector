@@ -36,3 +36,7 @@ build/
 
 # Sublime-Text workspace files
 *.sublime-workspace
+
+# Latex output files
+docs/output/
+docs/*.pdf
