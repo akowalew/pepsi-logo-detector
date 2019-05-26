@@ -24,6 +24,11 @@ target_include_directories(detector
 		${OpenCV_INCLUDE_DIRS}
 )
 
+target_compile_definitions(detector
+	PUBLIC
+		SPDLOG_STATIC_LIB
+)
+
 set_target_properties(detector
 	PROPERTIES
 		CXX_STANDARD 17

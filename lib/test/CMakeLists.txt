@@ -33,3 +33,5 @@ if(MSVC)
     )
 endif()
 
+# cotire(detector_test)
+

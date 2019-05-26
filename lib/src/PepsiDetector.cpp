@@ -138,7 +138,7 @@ Point get_blob_center(const BlobAnchors& blob_anchors)
 
 Points get_blobs_centers(const BlobsAnchors& blobs_anchors)
 {
-    spdlog::debug("[PepsiDetector] Getting blobs centers...");
+    spdlog::debug("[PepsiDetector] Getting blobs centers from its anchors...");
 
     auto blobs_centers = Points();
     blobs_centers.reserve(blobs_anchors.size());
@@ -169,7 +169,7 @@ PepsiDetector::Impl::Impl(const Config& config)
 
 Logos PepsiDetector::Impl::find_logos(const cv::Mat& bgr) const
 {
-    spdlog::debug("[PepsiDetector] Finding logos...");
+    spdlog::debug("[PepsiDetector] Finding logos on image...");
     imglog::log("Original", bgr);
 
     const auto enhanced = enhance_image(bgr);
@@ -354,14 +354,14 @@ Logos PepsiDetector::Impl::match_blobs(const Blobs& red_blobs, const Blobs& blue
 {
     spdlog::debug("[PepsiDetector] Matching blobs...");
 
-    const auto red_anchors = get_blobs_anchors(red_blobs);
-    const auto red_centers = get_blobs_centers(red_anchors);
+    const auto red_blobs_anchors = get_blobs_anchors(red_blobs);
+    const auto red_blobs_centers = get_blobs_centers(red_blobs_anchors);
 
-    const auto blue_anchors = get_blobs_anchors(blue_blobs);
-    const auto blue_centers = get_blobs_centers(blue_anchors);
+    const auto blue_blobs_anchors = get_blobs_anchors(blue_blobs);
+    const auto blue_blobs_centers = get_blobs_centers(blue_blobs_anchors);
 
-    spdlog::debug("[PepsiDetector] Red centers: {}", red_centers);
-    spdlog::debug("[PepsiDetector] Blue centers: {}", blue_centers);
+    spdlog::debug("[PepsiDetector] Red centers: {}", red_blobs_centers);
+    spdlog::debug("[PepsiDetector] Blue centers: {}", blue_blobs_centers);
 
     Logos logos;
     const auto logos_max = std::min(red_blobs.size(), blue_blobs.size());
@@ -371,15 +371,22 @@ Logos PepsiDetector::Impl::match_blobs(const Blobs& red_blobs, const Blobs& blue
     const auto blue_blobs_size = blue_blobs.size();
     for(auto red_idx = 0; red_idx < red_blobs_size; ++red_idx)
     {
-        auto red_center = red_centers[red_idx];
+        auto red_center = red_blobs_centers[red_idx];
         for(auto blue_idx = 0; blue_idx < blue_blobs_size; ++blue_idx)
         {
-            auto blue_center = blue_centers[blue_idx];
+            auto blue_center = blue_blobs_centers[blue_idx];
             if(blobs_centers_matching(red_center, blue_center))
             {
-                const auto top_left = red_anchors[red_idx].top_left;
-                const auto bottom_right = blue_anchors[blue_idx].bottom_right;
-                logos.emplace_back(top_left, bottom_right);
+                const auto red_anchors = red_blobs_anchors[red_idx];
+                const auto blue_anchors = blue_blobs_anchors[blue_idx];
+
+                const auto top_left_x = std::min(red_anchors.top_left.x, blue_anchors.top_left.x);
+                const auto top_left_y = std::min(red_anchors.top_left.y, blue_anchors.top_left.y);
+
+                const auto bottom_right_x = std::max(red_anchors.bottom_right.x, blue_anchors.bottom_right.x);
+                const auto bottom_right_y = std::max(red_anchors.bottom_right.y, blue_anchors.bottom_right.y);
+
+                logos.emplace_back(Point{top_left_x, top_left_y}, Point{bottom_right_x, bottom_right_y});
             }
         }
     }
