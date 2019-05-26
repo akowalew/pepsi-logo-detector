@@ -80,11 +80,11 @@
 
 		Do zbudowania aplikacji wymagane jest posiadanie globalnie zainstalowanej biblioteki OpenCV. Poniższe kroki opisują sposób kompilacji w systemie Linux:
 		\begin{verbatim}
-			> git clone https://github.com/akowalew/pepsi-logo-detector
-			> cd pepsi-logo-detector && mkdir build && cd build
-			> conan install .. -s compiler=gcc -s compiler.version=8
-			> export CXX=g++-8 && cmake .. -DCMAKE_BUILD_TYPE=Debug
-			> make -j5
+		    > git clone https://github.com/akowalew/pepsi-logo-detector
+		    > cd pepsi-logo-detector && mkdir build && cd build
+		    > conan install .. -s compiler=gcc -s compiler.version=8
+		    > export CXX=g++-8 && cmake .. -DCMAKE_BUILD_TYPE=Debug
+		    > make -j5
 		\end{verbatim}
 
 		Po zbudowaniu aplikacji użytkownik ma do dyspozycji dwa foldery: \texttt{bin} oraz dowiązany \texttt{assets}. W pierwszym znajdują się pliki wykonalne, zaś w drugim przykładowe obrazy, na których można przetestować algorytm.
@@ -94,7 +94,7 @@
 		Do wykrywania loga pepsi służy program \texttt{find\_logos}. Jako pierwszy parametr przyjmuje ścieżkę do obrazka wejściowego, natomiast drugi, opcjonalny, wskazuje ścieżkę do obrazka wynikowego. Jeśli go pominiemy, wynik algorytmu zostanie przedstawiony na ekranie. Dodatkowo, flaga \texttt{-v} (\texttt{--verbose}) spowoduje wygenerowanie komunikatów diagnostycznych oraz wyświetlenie wszystkich zdjęć pośrednich w trakcie przetwarzania przez algorytm. Przykładowe wywołanie programu:
 
 		\begin{verbatim}
-			> ./bin/find_logos assets/camera/0 -v
+		    > ./bin/find_logos assets/camera/0 -v
 		\end{verbatim}
 
 		Do dyspozycji użytkownika przygotowano dwa zestawy zdjęć testowych: pochodzących z kamery smartfonu oraz pochodzących z internetu (odpowiednio nazwane katalogi \texttt{camera} oraz \texttt{net}). Oprócz tego, użytkownik może modyfikować parametry działania algorytmu detekcji poprzez ich zmianę w pliku \texttt{config.json}. Poniżej przedstawiono przykładową konfigurację algorytmu:
@@ -117,7 +117,10 @@
 
 		Dla każdego z elementów wchodzących w skład loga pepsi (tj. niebieska oraz czerwona plama) możemy modyfikować zakres progrowania koloru \texttt{red\_range}/\texttt{blue\_range} (zapisane w przestrzenii HSV), zakres pola powierzchni \texttt{*\_blob\_area\_range} (w pikselach), zakres wartości niezmienników Hu[0] oraz Hu[1] - \texttt{*\_blob\_hu0/1\_range}, oraz zakres odległości między środkami plam \texttt{max\_blobs\_centers\_distance}.
 
-		Dla systemu przygotowany został odpowiedni zestaw testów jednostkowych, którymi sprawdzić można działanie poszczególnych modułów algorytmu oraz prowadzić tzw. testy regresji. Dodatkowo, dla każdego z dostarczonych zdjęć, sprawdza się ilość i położenie wykrytych znaczników Pepsi. Dzięki temu można modyfikować parametry programu i sprawdzać dla wszystkich zdjęć jednocześnie, czy algorytm działa poprawnie.
+		Dla systemu przygotowany został odpowiedni zestaw testów jednostkowych, którymi sprawdzić można działanie poszczególnych modułów algorytmu oraz prowadzić tzw. testy regresji. Dodatkowo, dla każdego z dostarczonych zdjęć, sprawdza się ilość i położenie wykrytych znaczników Pepsi. Dzięki temu można modyfikować parametry programu i sprawdzać dla wszystkich zdjęć jednocześnie, czy algorytm działa poprawnie. Testy uruchamia się następującym poleceniem:
+		\begin{verbatim}
+		    > ./bin/detector_test
+		\end{verbatim}
 
 \section*{3. Architektura programu}
 
@@ -137,15 +140,15 @@
 			\item \texttt{points} - Pozostałe funkcje użytkowe, operujące na zbiorach punktów
 		\end{itemize}
 
-		Podczas implementacji algorytmów szczególny nacisk położono na ich wydajność, zatem wszelkie funkcje przetwarzające obrazy wykorzystują operacje na wskaźnikach. Jako że znano z góry format przetwarzanych zdjęć, większość algorytmów zaimplementowano z myślą o konkretnym typie obrazu. I tak np. funkcja \texttt{filter\_image} operuje na obrazkach w formacie \texttt{cv::Mat3b}, a np. funkcje \texttt{erode} i \texttt{dilate} operują na obrazkach \texttt{cv::Mat1b}. W związku z tym funkcje te nie są generyczne dla każdego formatu, ale dzięki temu są szybkie i uniknięto kłopotu z tworzeniem uniwersalnych implementacji.
+		Podczas implementacji algorytmów szczególny nacisk położono na ich wydajność, zatem większość funkcji przetwarzających obrazy wykorzystuje operacje na wskaźnikach. Jako że znano z góry format przetwarzanych zdjęć, większość algorytmów zaimplementowano z myślą o konkretnym typie obrazu. I tak np. funkcja \texttt{filter\_image} operuje na obrazkach w formacie \texttt{cv::Mat3b}, a np. funkcje \texttt{erode} i \texttt{dilate} operują na obrazkach \texttt{cv::Mat1b}. W związku z tym funkcje te nie są generyczne dla każdego formatu, ale dzięki temu są szybkie i uniknięto kłopotu z tworzeniem uniwersalnych implementacji.
 
 	\subsection*{3.2. Klasa \texttt{PepsiDetector}}
 
-		Głównym punktem biblioteki \texttt{libdetector} jest oczywiście klasa \texttt{PepsiDetector}, która jest dedykowana do wykrywania loga Pepsi. Dziedziczy ona po interfejsie \texttt{LogoDetector}. Detekcja odbywa się przy użyciu metody \texttt{find\_logos}, której wynikiem działania jest tablica prostokątów obejmujących logo Pepsi na obrazie.
+		Głównym punktem biblioteki \texttt{libdetector} jest oczywiście klasa \texttt{PepsiDetector}, dedykowana do wykrywania loga Pepsi. Dziedziczy ona po interfejsie \texttt{LogoDetector}. Detekcja odbywa się przy użyciu metody \texttt{find\_logos}. Na jej wejściu zadawany jest obraz w formacie BGR, zaś wynikiem działania jest tablica prostokątów obejmujących logo Pepsi na obrazie.
 
 	\subsection*{3.3. Klasa \texttt{Application}}
 
-		Klasa \texttt{Application} jest punktem wyjścia dla docelowej aplikacji. Ładuje ona plik konfiguracyjny z parametrami, wczytuje obraz do przetwarzania, tworzy instancję klasy \texttt{PepsiDetector} oraz przy jej użyciu dokonuje detekcji znaczników Pepsi. Po skończonym przetwarzaniu obrysowuje loga Pepsi zielonym prostokątem i, jeśli użytkownik podał ścieżkę do obrazu wyjściowego, zapisuje wyniki na dysku, lub, w przeciwnym wypadku, wyświetla je oknie graficznym.
+		Klasa \texttt{Application} jest punktem wyjścia dla docelowej aplikacji. Ładuje ona plik konfiguracyjny z parametrami, wczytuje obraz do przetwarzania, tworzy instancję klasy \texttt{PepsiDetector} oraz przy jej użyciu dokonuje detekcji znaczników Pepsi. Po skończonym przetwarzaniu obrysowuje loga Pepsi zielonym prostokątem i, jeśli użytkownik podał ścieżkę do obrazu wyjściowego, zapisuje wyniki na dysku, lub, w przeciwnym wypadku, wyświetla je w oknie graficznym.
 
 \section*{4. Potok przetwarzania obrazów}
 
@@ -174,7 +177,7 @@
 
 	\subsection*{4.2. Konwersja do HSV}
 
-			Po wstępnym wyostrzeniu zdjęcia BGR (24-bitowego) przeprowadzana jest jego konwersja do formatu HSV (24-bitowego), na potrzeby późniejszego progowania kolorem. Wykonywana jest ona przy użyciu funkcji \texttt{bgr2hsv}. Dla każdego piksela $B, G, R$ (każdy po osiem bitów) wykonywane są następujące operacje:
+			Po wstępnym wyostrzeniu zdjęcia BGR (24-bitowego), przeprowadzana jest jego konwersja do formatu HSV (również 24-bitowego), na potrzeby późniejszego progowania kolorem. Wykonywana jest ona przy użyciu funkcji \texttt{bgr2hsv}. Dla każdego piksela $B, G, R$ (każdy po osiem bitów) wykonywane są następujące operacje:
 
 			\begin{enumerate}
 				\item Wyszukiwana jest maksymalna i minimalna wartość spośród składowych, oznaczone odpowiednio $MAX, MIN$
@@ -331,24 +334,8 @@
 
 	Działanie programu zweryfikowano na dwóch zbiorach ze zdjęciami: pochodzącymi ze smartfonu oraz pochodzącymi z internetu. Podział ten wynika z faktu, iż zdjęcia pochodzące ze smartfonu mają inny odcień kolorów, nie są ulepszane ani korygowane pod względem zakłóceń, tak jak ma to miejsce w przypadku obrazów z internetu.
 
+	\subsection*{6.2. Perspektywy rozwoju}
 	Na rysunkach~\ref{fig:smartfon-1} i~\ref{fig:smartfon-2} przedstawiono wyniki działania programu dla obrazów pochodzących ze smartfonu, natomiast na rysunku~\ref{fig:net-1} pokazano efekt przetwarzania dla zdjeć pobranych z internetu.
-
-	\begin{figure}
-	    \centering
-	    \begin{subfigure}[b]{0.48\textwidth}
-	        \includegraphics[width=\textwidth]{img/camera/7}
-	    \end{subfigure}
-	    ~
-	    \begin{subfigure}[b]{0.48\textwidth}
-	        \includegraphics[width=\textwidth]{img/camera/1}
-	    \end{subfigure}
-	    \\
-	    \begin{subfigure}[b]{\textwidth}
-	        \includegraphics[width=\textwidth]{img/camera/9}
-	    \end{subfigure}
-	    \caption{Wyniki działania programu dla zdjęć pochodzących ze smartfonu}
-	    \label{fig:smartfon-1}
-	\end{figure}
 
 	\begin{figure}
 	    \centering
@@ -382,6 +369,23 @@
 	        \includegraphics[width=\textwidth]{img/camera/8}
 	    \end{subfigure}
 	    \caption{Wyniki działania programu dla zdjęć pochodzących ze smartfonu (ciąg dalszy)}
+	    \label{fig:smartfon-1}
+	\end{figure}
+
+	\begin{figure}
+	    \centering
+	    \begin{subfigure}[b]{0.48\textwidth}
+	        \includegraphics[width=\textwidth]{img/camera/15}
+	    \end{subfigure}
+	    ~
+	    \begin{subfigure}[b]{0.48\textwidth}
+	        \includegraphics[width=\textwidth]{img/camera/14}
+	    \end{subfigure}
+	    \\
+	    \begin{subfigure}[b]{0.8\textwidth}
+	        \includegraphics[width=\textwidth]{img/camera/13}
+	    \end{subfigure}
+	    \caption{Wyniki działania programu dla zdjęć pochodzących ze smartfonu (obrócone zdjęcia)}
 	    \label{fig:smartfon-2}
 	\end{figure}
 
@@ -412,7 +416,7 @@
 
 		Jako, że logo Pepsi nie jest skomplikowane, zastosowano stosunkowo proste algorytmy przetwarzania obrazów. Niemniej, rozwiązanie to można dalej rozbudowywać.
 
-		Dalsze ulepszenia potoku przetwarzania dotyczyć mogą przede wszystkim rozpoznawania okręgów z logiem Pepsi. Wykorzystać można w tym celu transformatę Hougha i detekcję krawędzi algorytmem Canny'ego. Dalsze etapy przetwarzania można wtedy ograniczyć tylko do środków okręgów (ponieważ to w nich zawiera się "centrum" loga Pepsi). Przynieść to może potencjalnie wzrost wydajności (znacznie mniej pikseli do przetwarzania), jednak należałoby przy tym uwzględnić koszt samej transformaty Hougha.
+		Dalsze ulepszenia potoku przetwarzania dotyczyć mogą przede wszystkim rozpoznawania okręgów z logiem Pepsi. Wykorzystać można w tym celu transformatę Hougha i detekcję krawędzi algorytmem Canny'ego. Dalsze etapy przetwarzania można wtedy ograniczyć tylko do środków okręgów (ponieważ to w nich zawiera się ``centrum'' loga Pepsi). Przynieść to może potencjalnie wzrost wydajności (znacznie mniej pikseli do przetwarzania), jednak należałoby przy tym uwzględnić koszt samej transformaty Hougha.
 
 		Aplikacja została także stworzona z myślą o możliwości rozpoznawania nie tylko loga Pepsi. Do dyspozycji jest interfejs bazowy \texttt{LogoDetector}, zatem należałoby tylko napisać kolejne klasy konkretne, jak np. \texttt{SevenUpLogoDetector}, \texttt{LiptonLogoDetector}, \texttt{SpriteLogoDetector}. Stwarza to potencjalne możliwości rozwoju aplikacji.
 
