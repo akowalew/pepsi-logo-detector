@@ -334,8 +334,7 @@
 
 	Działanie programu zweryfikowano na dwóch zbiorach ze zdjęciami: pochodzącymi ze smartfonu oraz pochodzącymi z internetu. Podział ten wynika z faktu, iż zdjęcia pochodzące ze smartfonu mają inny odcień kolorów, nie są ulepszane ani korygowane pod względem zakłóceń, tak jak ma to miejsce w przypadku obrazów z internetu.
 
-	\subsection*{6.2. Perspektywy rozwoju}
-	Na rysunkach~\ref{fig:smartfon-1} i~\ref{fig:smartfon-2} przedstawiono wyniki działania programu dla obrazów pochodzących ze smartfonu, natomiast na rysunku~\ref{fig:net-1} pokazano efekt przetwarzania dla zdjeć pobranych z internetu.
+	Na rysunkach~\ref{fig:smartfon-1} i~\ref{fig:smartfon-2} przedstawiono wyniki działania programu dla obrazów pochodzących ze smartfonu. Pierwszy z nich pokazuje typowe przypadki zdjęć zawierających logo Pepsi, zaś na drugim niektóre z obrazów obrócono, w celu sprawdzenia działania niezmienników względem obrotu. Na rysunku~\ref{fig:net-1} pokazano efekt przetwarzania dla zdjęć pobranych z internetu.
 
 	\begin{figure}
 	    \centering
@@ -410,7 +409,9 @@
 
 	\subsection*{6.1. Podsumowanie i wnioski}
 
-		Zadaniem projektowym było zaimplementowanie systemu do rozpoznawania loga Pepsi na zdjęciach cyfrowych. Cel ten udało się zrealizować. Zapropowana aplikacja poprawnie rozpoznaje znaczniki na dostarczonych obrazach. Program pozwala ponadto elastycznie konfigurować parametry działania algorytmu w zależności od warunków, w jakich robione były zdjęcia. Wraz z aplikacją dostarczono zestaw testów jednostkowych, którymi można zweryfikować poprawność działania algorytmów.
+		Zadaniem projektowym było zaimplementowanie systemu do rozpoznawania loga Pepsi na zdjęciach cyfrowych. Cel ten udało się zrealizować. Zapropowana aplikacja poprawnie rozpoznaje znaczniki na dostarczonych obrazach. Wraz z aplikacją dostarczono zestaw testów jednostkowych, którymi można zweryfikować poprawność działania algorytmów. Oprócz tego, aplikacja pozwala sprawnie modyfikować parametry działania potoku przetwarzania przy użyciu plików konfiguracyjnych JSON.
+
+		Do oczywistych wniosków należy fakt, iż zaproponowane metody przetwarzania obrazów są silnie zależne od przestrzenii barw i oświetlenia, w jakim robione są zdjęcia. O ile dla zdjęć robionych własną kamerą (gdzie parametry koloru niewiele się zmieniają), nawet dla dynamicznych warunków oświetleniowych, łatwo było znaleźć odpowiednie wartości parametrów. Niestety, dla zdjęć pobranych z internetu, gdzie niemal każde zdjęcie cechuje się inną jakością oraz ilością kolorów, dobranie parametrów algorytmu nie jest zadaniem prostym. Autorzy tych zdjęć często sami je ulepszają, wyrównywają poziomy jasności, przez co algorytm staje się bardzo czuły i łatwo generuje błędy już na etapie progowania.
 
 	\subsection*{6.2. Perspektywy rozwoju}
 
