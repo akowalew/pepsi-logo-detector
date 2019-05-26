@@ -1,6 +1,5 @@
 [requires]
 Catch2/2.7.2@catchorg/stable
-gsl_microsoft/2.0.0@bincrafters/stable
 CLI11/1.7.1@cliutils/stable
 jsonformoderncpp/3.6.1@vthiery/stable
 spdlog/1.3.1@bincrafters/stable
