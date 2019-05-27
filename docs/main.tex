@@ -97,7 +97,9 @@
 		    > ./bin/find_logos assets/camera/0 -v
 		\end{verbatim}
 
-		Do dyspozycji użytkownika przygotowano dwa zestawy zdjęć testowych: pochodzących z kamery smartfonu oraz pochodzących z internetu (odpowiednio nazwane katalogi \texttt{camera} oraz \texttt{net}). Oprócz tego, użytkownik może modyfikować parametry działania algorytmu detekcji poprzez ich zmianę w pliku \texttt{config.json}. Poniżej przedstawiono przykładową konfigurację algorytmu:
+		Do dyspozycji użytkownika przygotowano dwa zestawy zdjęć testowych: pochodzących z kamery smartfonu oraz z internetu (odpowiednio nazwane katalogi \texttt{camera} oraz \texttt{net}).
+
+		Użytkownik może modyfikować parametry działania algorytmu detekcji poprzez ich zmianę w pliku \texttt{config.json}. Poniżej przedstawiono przykładową konfigurację potoku przetwarzania:
 
 		\begin{verbatim}
 		{
@@ -115,9 +117,9 @@
 		}
 		\end{verbatim}
 
-		Dla każdego z elementów wchodzących w skład loga pepsi (tj. niebieska oraz czerwona plama) możemy modyfikować zakres progrowania koloru \texttt{red\_range}/\texttt{blue\_range} (zapisane w przestrzenii HSV), zakres pola powierzchni \texttt{*\_blob\_area\_range} (w pikselach), zakres wartości niezmienników Hu[0] oraz Hu[1] - \texttt{*\_blob\_hu0/1\_range}, oraz zakres odległości między środkami plam \texttt{max\_blobs\_centers\_distance}.
+		Dla każdego z elementów wchodzących w skład loga pepsi (tj. niebieska oraz czerwona plama) możemy modyfikować zakres progrowania koloru poprzez zmienne \texttt{red\_range}/\texttt{blue\_range} (zapisane w przestrzenii HSV), zakres dopuszczalnego pola powierzchni wykrywanych plam \texttt{*\_blob\_area\_range} (w pikselach), zakres wartości niezmienników Hu[0] oraz Hu[1] - \texttt{*\_blob\_hu0/1\_range}, oraz zakres odległości między środkami plam - \texttt{max\_blobs\_centers\_distance}.
 
-		Dla systemu przygotowany został odpowiedni zestaw testów jednostkowych, którymi sprawdzić można działanie poszczególnych modułów algorytmu oraz prowadzić tzw. testy regresji. Dodatkowo, dla każdego z dostarczonych zdjęć, sprawdza się ilość i położenie wykrytych znaczników Pepsi. Dzięki temu można modyfikować parametry programu i sprawdzać dla wszystkich zdjęć jednocześnie, czy algorytm działa poprawnie. Testy uruchamia się następującym poleceniem:
+		Dla systemu przygotowany został odpowiedni zestaw testów jednostkowych, którymi można zweryfikować działanie poszczególnych modułów oraz prowadzić tzw. testy regresji. Ponadto, dla każdego z dostarczonych zdjęć, sprawdza się ilość i położenie wykrytych znaczników Pepsi. Dzięki temu można jednocześnie modyfikować parametry programu i sprawdzać dla wszystkich obrazów, czy algorytm dalej działa poprawnie. Testy uruchamia się następującym poleceniem:
 		\begin{verbatim}
 		    > ./bin/detector_test
 		\end{verbatim}
@@ -140,7 +142,7 @@
 			\item \texttt{points} - Pozostałe funkcje użytkowe, operujące na zbiorach punktów
 		\end{itemize}
 
-		Podczas implementacji algorytmów szczególny nacisk położono na ich wydajność, zatem większość funkcji przetwarzających obrazy wykorzystuje operacje na wskaźnikach. Jako że znano z góry format przetwarzanych zdjęć, większość algorytmów zaimplementowano z myślą o konkretnym typie obrazu. I tak np. funkcja \texttt{filter\_image} operuje na obrazkach w formacie \texttt{cv::Mat3b}, a np. funkcje \texttt{erode} i \texttt{dilate} operują na obrazkach \texttt{cv::Mat1b}. W związku z tym funkcje te nie są generyczne dla każdego formatu, ale dzięki temu są szybkie i uniknięto kłopotu z tworzeniem uniwersalnych implementacji.
+		Podczas implementacji algorytmów położono nacisk na ich wydajność, zatem większość funkcji przetwarzających obrazy wykorzystuje operacje na wskaźnikach. Jako że znano z góry format przetwarzanych zdjęć, większość algorytmów zaimplementowano z myślą o konkretnym typie obrazu. I tak np. funkcja \texttt{filter\_image} operuje na obrazkach w formacie \texttt{cv::Mat3b}, a np. funkcje \texttt{erode} i \texttt{dilate} operują na obrazkach \texttt{cv::Mat1b}. W związku z tym funkcje te nie są generyczne dla każdego formatu, ale dzięki temu są szybkie i uniknięto kłopotu z tworzeniem uniwersalnych implementacji.
 
 	\subsection*{3.2. Klasa \texttt{PepsiDetector}}
 
@@ -148,7 +150,7 @@
 
 	\subsection*{3.3. Klasa \texttt{Application}}
 
-		Klasa \texttt{Application} jest punktem wyjścia dla docelowej aplikacji. Ładuje ona plik konfiguracyjny z parametrami, wczytuje obraz do przetwarzania, tworzy instancję klasy \texttt{PepsiDetector} oraz przy jej użyciu dokonuje detekcji znaczników Pepsi. Po skończonym przetwarzaniu obrysowuje loga Pepsi zielonym prostokątem i, jeśli użytkownik podał ścieżkę do obrazu wyjściowego, zapisuje wyniki na dysku, lub, w przeciwnym wypadku, wyświetla je w oknie graficznym.
+		Klasa \texttt{Application} jest punktem wyjścia dla docelowej aplikacji. Ładuje ona plik konfiguracyjny z parametrami, wczytuje obraz do przetwarzania, tworzy instancję klasy \texttt{PepsiDetector} oraz przy jej użyciu dokonuje detekcji znaczników Pepsi. Po skończonym przetwarzaniu obrysowuje loga Pepsi zielonym prostokątem i, jeśli użytkownik podał ścieżkę do obrazu wyjściowego, zapisuje wyniki na dysku lub, w przeciwnym wypadku, wyświetla je w oknie graficznym.
 
 \section*{4. Potok przetwarzania obrazów}
 
@@ -198,9 +200,9 @@
 				\item Wartość koloru (ang. \emph{Value}) wynosi $V := MAX$
 			\end{enumerate}
 
-	\subsection*{4.3. Progrowanie koloru w dziedzinie HSV}
+	\subsection*{4.3. Progowanie koloru w dziedzinie HSV}
 
-			Otrzymawszy obraz w dziedzinie HSV, przeprowadzane jest jego progowanie, w celu detekcji odpowiednio czerwonych oraz niebieskich części loga Pepsi. Realizowane jest to z użyciem funkcji \texttt{threshold}. Działa ona w następujący sposób: dla każdego piksela obrazu wejściowego (w tym przypadku trójkanałowego), sprawdzane jest, czy wartość każdego ze składników koloru mieści się w zadanym przedziale. Jeśli tak, oznacza piksel wyjściowy wartością 255, a w przeciwnym wypadku - wartością 0 (progowanie binarne). Działanie tej funkcji podobne jest do znanej z OpenCV \texttt{cv::inRange}.
+			Otrzymawszy obraz w dziedzinie HSV, przeprowadza się jego progowanie, w celu detekcji odpowiednio czerwonych oraz niebieskich części loga Pepsi. Realizowane jest to z użyciem funkcji \texttt{threshold}. Działa ona w następujący sposób: dla każdego piksela obrazu wejściowego (w tym przypadku trójkanałowego) sprawdzane jest, czy wartości komponentów koloru mieszczą się w zadanym przedziale. Jeśli tak, do piksela wyjściowego wpisuje się wartość 255, a w przeciwnym wypadku - wartość 0 (progowanie binarne). Działanie tej funkcji podobne jest do znanej z OpenCV \texttt{cv::inRange}.
 
 			Jako, że teoretyczny kolor czerwony umieszczony jest w odcieniach o kątach $[330^\circ; 30^\circ]$ (przechodzi przez zero), wykonuje się dla niego podwójne progowanie. Pierwszy raz dla kątów dochodzących do $360^\circ$ (czyli tutaj wartości do 180), drugi raz dla wartości wychodzących od zera. Otrzymane w ten sposób dwie maski sumuje się bitowo, piksel po pikselu, funkcją \texttt{bitwise\_or}.
 
@@ -223,19 +225,19 @@
 
 	\subsection*{4.5. Ekstrakcja plam}
 
-			Mając odfiltrowane maski koloru czerwonego i niebieskiego wykonuje się ekstrakcję plam (ang. \emph{blobs}). Plama jest to po prostu tablica punktów, opisująca wypełnienie obiektu. Ekstrakcję plam realizuje się funkcją \texttt{find\_blobs}. Działa ona w oparciu o iteracyjne przeszukanie obrazka wszerz (ang. \emph{Breadth-First-Search}). Funkcja ta działa niszcząco na obrazek wejściowy (co nie stanowi problemu w dalszych etapach przetwarzania). Dla każdego piksela obrazka sprawdza, czy ma on niezerową wartość. Jeśli tak, dodaje go do tablicy punktów, zeruje w obrazku wejściowym i sprawdza każdy punkt z otoczenia. Jeśli w otoczeniu nie znajdzie nowych pikseli, zamyka plamę i przechodzi do tworzenia nowej.
+			Mając odfiltrowane maski koloru czerwonego i niebieskiego wykonuje się ekstrakcję plam (ang. \emph{blobs}). Plama jest to po prostu tablica punktów, z których składa się obiekt. Ekstrakcję plam realizuje się funkcją \texttt{find\_blobs}. Działa ona w oparciu o iteracyjne przeszukanie obrazka wszerz (ang. \emph{Breadth-First-Search}). Funkcja ta działa niszcząco na obrazek wejściowy (co nie stanowi problemu w dalszych etapach przetwarzania). Dla każdego piksela obrazka wejściowego sprawdza, czy ma on niezerową wartość. Jeśli tak, dodaje go do tablicy punktów, zeruje go w obrazku wejściowym i sprawdza kolejno każdy punkt z otoczenia. Jeśli w otoczeniu nie znajdzie nowych pikseli, zamyka plamę i przechodzi do tworzenia nowej.
 
-			Wybór ekstrakcji plam, zamiast konturów (jak ma to miejsce np. w \texttt{OpenCV}), ułatwiło implementację oraz zapewniło stosunkowo wysoką wydajność dla małych obiektów. Ponadto, posiadanie tablicy punktów ułatwi późniejsze obliczenia.
+			Wybór ekstrakcji plam, zamiast np. konturów (jak ma to miejsce chociażby w \texttt{OpenCV}), ułatwiło implementację oraz zapewniło stosunkowo wysoką wydajność dla małych obiektów. Ponadto, posiadanie tablicy punktów ułatwi późniejsze obliczenia.
 
 	\subsection*{4.6. Filtracja względem pola powierzchni}
 
-			Mimo zastosowanej filtracji morfologicznej, nadal istnieje szansa na detekcję bardzo małych obiektów, równoznacznych z szumem. Oprócz tego, możliwe jest wykrycie zbyt dużych obiektów (np. logo pepsi - po części niebieskie - może być umieszczone na puszce - równie niebieskiej). W tym celu przeprowadzana filtracja otrzymanych plam względem ich pola powierzchni. W tym przypadku pole to jest równe ilości pikseli (ilości punktów w tablicy), zatem filtracji tej dokonuje się szybko oraz, przy dobrze dobranych parametrach, pozwala wyeliminować większość błędnych obiektów.
+			Mimo zastosowanej filtracji morfologicznej, nadal istnieje szansa na detekcję bardzo małych obiektów, równoznacznych z szumem. Oprócz tego, możliwe jest wykrycie zbyt dużych obiektów (np. logo pepsi - po części niebieskie - może być umieszczone na puszce - również niebieskiej). W tym celu przeprowadzana filtracja otrzymanych plam względem ich pola powierzchni. Pole to jest równe po prostu ilości pikseli (ilości punktów w tablicy), zatem filtracja ta wykonuje się szybko, oraz przy dobrze dobranych parametrach, pozwala wyeliminować większość błędnych obiektów.
 
 	\subsection*{4.7. Liczenie niezmienników Hu}
 
-			Ostateczna klasyfikacja obiektów opiera się o dopasowywanie względem ich niezmienników momentowych - Hu. Obliczenia realizuje się z wykorzystaniem funkcji zawartych w module \texttt{moments}, a dokładniej z \texttt{calc\_blobs\_hu\_moments}. Dla zadanej tablicy z plamami (tablica tablic punktów) liczone są wszystkie niezmienniki momentowe Hu. Jednak zanim je się otrzyma, liczone są wcześniej momenty niższego rzędu. I tak, pierw liczy się momenty podstawowe, geometryczne (\texttt{calc\_spatial\_moments}):
+			Kolejny etap klasyfikacji obiektów opiera się o dopasowywanie względem ich niezmienników momentowych - Hu. Obliczenia realizuje się z wykorzystaniem funkcji zawartych w module \texttt{moments}, a dokładniej z \texttt{calc\_blobs\_hu\_moments}. Dla zadanej tablicy z plamami (tablica tablic punktów) liczone są wszystkie niezmienniki momentowe Hu. Jednak zanim się je otrzyma, liczone są wcześniej momenty niższego rzędu. I tak, pierw liczy się momenty podstawowe, geometryczne (\texttt{calc\_spatial\_moments}):
 			\[
-				M_{ij} = \sum_{(x,~y)~\in~\text{blob}} x^i y^j
+				M_{ij} = \sum_{(x,y)} x^i y^j
 			\]
 			gdzie $i, j$ określają indeks momentu, zaś $(x, y)$ to punkty wchodzące w skład plamy.
 
@@ -246,7 +248,7 @@
 
 			Posiadając centroid, możemy obliczyć niezmienniki od translacji - momenty centralne (\texttt{calc\_central\_moments}):
 			\[
-				\mu_{pq} = \sum_{(x,~y)~\in~\text{blob}} (x - \overline{x})^p (y - \overline{y})^q
+				\mu_{pq} = \sum_{(x,y)} (x - \overline{x})^p (y - \overline{y})^q
 			\]
 
 			Niezmienniki od skali otrzymuje się przez normalizację momentów centralnych następującą regułą (\texttt{calc\_normalized\_moments}):
@@ -254,7 +256,7 @@
 				\eta_{ij} = \frac{\mu_{ij}}{\mu_{00}^{~\left(1 + \frac{1+j}{2}\right)}}
 			\]
 
-			Niezmienniki Hu (od obrotu) otrzymuje się z następujących równań:
+			Wreszcie, niezmienniki Hu (od obrotu) otrzymuje się z następujących równań:
 
 			\begin{align}
 			\begin{split}
@@ -271,7 +273,7 @@
 
 	\subsection*{4.8. Filtracja względem niezmienników Hu}
 
-			Kolejnym etapem przetwarzania jest filtracja względem niezmienników Hu. Pozwala to na eliminowanie plam, które kształtem odbiegają od zadanych (czerwona i niebieska część logo Pepsi). Poniżej przedstawiono przykładowe wartości niezmienników dla czerwonej części loga:
+			Kolejnym etapem przetwarzania jest filtracja względem niezmienników Hu. Pozwala to na eliminowanie plam, które kształtem odbiegają od zadanych (czerwona i niebieska część logo Pepsi). Poniżej przedstawiono przykładowe wartości niezmienników dla czerwonej części loga (zdjęcia pochodzące z kamery smartfonu):
 
 			\begin{verbatim}
 				 Hu[0]     Hu[1]     Hu[2]     Hu[3]     Hu[4]     Hu[5]     Hu[6]
@@ -328,13 +330,13 @@
 
 			Ostatecznym kryterium klasyfikacji jest zachowanie odpowiedniej odległości pomiędzy plamami czerwonymi i niebieskimi. W logo Pepsi, obydwie części umieszczone są blisko siebie, niemal się stykając. W ramach ostatniego etapu, dla każdej pary plam, liczy się odległość między środkami obejmujących ich prostokątów. (ang. \emph{bounding rect}). Jeśli odległość ta spełnia zadane kryteria, para uznawana jest znak Pepsi i zwracany jest prostokąt obejmujący całe logo. (dokładniej to zawierający obydwie plamy, ale to w zupełności wystarczy)
 
-			Na drodze eksperymentów przyjęto, że maksymalny dystans między środkami plam wynosić powinien 30 pikseli.
+			Na drodze eksperymentów przyjęto, że dla zdjęć wykonanych smartfonem maksymalny dystans między środkami plam wynosić powinien 30 pikseli.
 
 \section*{5. Efekty działania}
 
 	Działanie programu zweryfikowano na dwóch zbiorach ze zdjęciami: pochodzącymi ze smartfonu oraz pochodzącymi z internetu. Podział ten wynika z faktu, iż zdjęcia pochodzące ze smartfonu mają inny odcień kolorów, nie są ulepszane ani korygowane pod względem zakłóceń, tak jak ma to miejsce w przypadku obrazów z internetu.
 
-	Na rysunkach~\ref{fig:smartfon-1} i~\ref{fig:smartfon-2} przedstawiono wyniki działania programu dla obrazów pochodzących ze smartfonu. Pierwszy z nich pokazuje typowe przypadki zdjęć zawierających logo Pepsi, zaś na drugim niektóre z obrazów obrócono, w celu sprawdzenia działania niezmienników względem obrotu. Na rysunku~\ref{fig:net-1} pokazano efekt przetwarzania dla zdjęć pobranych z internetu.
+	Na rysunkach~\ref{fig:smartfon-1} i~\ref{fig:smartfon-2} przedstawiono wyniki działania programu dla obrazów pochodzących ze smartfonu. Pierwszy z nich pokazuje typowe przypadki zdjęć zawierających logo Pepsi, zaś na drugim niektóre z obrazów celowo obrócono, w celu sprawdzenia działania niezmienników względem obrotu. Na rysunku~\ref{fig:net-1} pokazano efekt przetwarzania dla zdjęć pobranych z internetu.
 
 	\begin{figure}
 	    \centering
@@ -409,9 +411,9 @@
 
 	\subsection*{6.1. Podsumowanie i wnioski}
 
-		Zadaniem projektowym było zaimplementowanie systemu do rozpoznawania loga Pepsi na zdjęciach cyfrowych. Cel ten udało się zrealizować. Zapropowana aplikacja poprawnie rozpoznaje znaczniki na dostarczonych obrazach. Wraz z aplikacją dostarczono zestaw testów jednostkowych, którymi można zweryfikować poprawność działania algorytmów. Oprócz tego, aplikacja pozwala sprawnie modyfikować parametry działania potoku przetwarzania przy użyciu plików konfiguracyjnych JSON.
+		Zadaniem projektowym było zaimplementowanie systemu do rozpoznawania loga Pepsi na zdjęciach cyfrowych. Cel ten udało się zrealizować. Zapropowana aplikacja poprawnie rozpoznaje znaczniki na załączonych obrazach. Wraz z aplikacją dostarczono zestaw testów jednostkowych, którymi można zweryfikować poprawność działania algorytmów. Oprócz tego, aplikacja pozwala sprawnie modyfikować parametry działania potoku przetwarzania przy użyciu plików konfiguracyjnych JSON.
 
-		Do oczywistych wniosków należy fakt, iż zaproponowane metody przetwarzania obrazów są silnie zależne od przestrzenii barw i oświetlenia, w jakim robione są zdjęcia. O ile dla zdjęć robionych własną kamerą (gdzie parametry koloru niewiele się zmieniają), nawet dla dynamicznych warunków oświetleniowych, łatwo było znaleźć odpowiednie wartości parametrów. Niestety, dla zdjęć pobranych z internetu, gdzie niemal każde zdjęcie cechuje się inną jakością oraz ilością kolorów, dobranie parametrów algorytmu nie jest zadaniem prostym. Autorzy tych zdjęć często sami je ulepszają, wyrównywają poziomy jasności, przez co algorytm staje się bardzo czuły i łatwo generuje błędy już na etapie progowania.
+		Do oczywistych wniosków należy fakt, iż zaproponowane metody przetwarzania obrazów są silnie zależne od przestrzenii barw i oświetlenia, w jakim robione są zdjęcia. O ile dla zdjęć robionych własną kamerą (gdzie parametry koloru niewiele się zmieniają), nawet dla dynamicznych warunków oświetleniowych, łatwo było znaleźć odpowiednie wartości zakresów progowania. Niestety, dla zdjęć pobranych z internetu, gdzie niemal każde zdjęcie cechuje się inną jakością oraz ilością kolorów, dobranie parametrów algorytmu nie jest zadaniem prostym. Autorzy tych zdjęć często sami je ulepszają oraz wyrównywają poziomy jasności, przez co algorytm staje się bardzo czuły i łatwo generuje błędy już na etapie progowania.
 
 	\subsection*{6.2. Perspektywy rozwoju}
 
