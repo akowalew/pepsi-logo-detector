@@ -18,10 +18,11 @@ Except of course an OpenCV library, in order to finish the project, I've decided
 
 ## Building and running
 
-- Clone the repository
-- Create and go to build directory: `mkdir build/ && cd build`
-- Install conan dependencies: `conan install ..`
-- Configure CMake: `cmake .. -DCMAKE_BUILD_TYPE=<build_type>`
-- Build: `make -j4`
-- Run the program and pass image to it: `./bin/find_logos assets/camera/<n>.jpg`, where `<n>` is number of image
-- Optionally - run unit tests: `./bin/detector_test`
+- Clone the repository,
+- Create and go to build directory: `mkdir build/ && cd build`,
+- Install conan dependencies: `conan install ..`,
+- Configure CMake: `cmake .. -DCMAKE_BUILD_TYPE=<build_type>`,
+- Build: `make -j4`,
+- Run the program and pass image to it: `./bin/find_logos assets/camera/<n>.jpg`, where `<n>` is number of image,
+- If you would like to see all steps of image processing, provide also `-v` (`--verbose`) option,
+- Optionally - run unit tests: `./bin/detector_test`.
